@@ -1,0 +1,36 @@
+{
+  "name": "@wjfe/single-spa-svelte",
+  "version": "0.0.1",
+  "description": "NPM package capable of creating single-spa lifecycle functions for Svelte v5 components.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WJSoftware/wjfe-single-spa-svelte.git"
+  },
+  "keywords": [
+    "singlespa",
+    "svelte"
+  ],
+  "author": "José Pablo Ramírez Vargas <webJose@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WJSoftware/wjfe-single-spa-svelte/issues"
+  },
+  "homepage": "https://github.com/WJSoftware/wjfe-single-spa-svelte#readme",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.18.0",
+    "rollup-plugin-svelte": "^7.2.0",
+    "single-spa": "^6.0.1",
+    "tslib": "^2.6.3",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "svelte": "^5.0.0-next.149"
+  },
+  "type": "module"
+}
