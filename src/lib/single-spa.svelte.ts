@@ -51,7 +51,7 @@ export type SvelteOptions<TProps extends Record<string, any>, TExports extends R
  */
 class SvelteLifeCycle<TProps extends Record<string, any>> {
     #instance?: object;
-    props = $state<TProps>();
+    props = $state<TProps | undefined>({} as TProps);
 
     constructor() {
         this.#instance = undefined;
@@ -87,7 +87,10 @@ function singleSpaSvelte<TProps extends Record<string, any>>(
         };
         delete mergedProps.domElement;
         delete mergedProps.domElementGetter;
-        this.props = mergedProps;
+        for (let [k, v] of Object.entries(mergedProps)) {
+            this.props[k] = v;
+        }
+        // this.props = { ...mergedProps };
         const target = chooseDomElementGetter(props, domElementGetter)();
         this.instance = mount(component, { ...svelteOptions, target, props: this.props });
         return Promise.resolve();
@@ -104,7 +107,11 @@ function singleSpaSvelte<TProps extends Record<string, any>>(
     }
 
     function updateComponent(this: SvelteLifeCycle<TProps>, newProps: TProps) {
-        this.props = newProps;
+        console.debug('Update!!!!: %o', newProps);
+        for (let [k, v] of Object.entries(newProps)) {
+            this.props[k] = v;
+        }
+        // this.props = { ...newProps };
         return Promise.resolve();
     }
 
