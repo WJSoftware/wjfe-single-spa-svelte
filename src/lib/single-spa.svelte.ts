@@ -7,22 +7,30 @@ import { type Component } from "svelte";
  * **IMPORTANT**:  This should come from the single-spa package's types.  Remove once referencing
  * single-spa is possible.
  */
-export type LifecycleFunction<TProps extends Record<string, any>> = (sspaProps: SingleSpaProps<TProps>) => Promise<void>;
+export type LifecycleFunction = (sspaProps: SingleSpaProps) => Promise<void>;
 
-export type DomElementGetterFunction<TProps extends Record<string, any>> = (props: SingleSpaProps<TProps>) => HTMLElement;
+export type DomElementGetterFunction = (props: SingleSpaProps) => HTMLElement;
 
 /**
  * Defines the single-spa lifecycle functions.
  *
  * **IMPORTANT**:  This should come from the single-spa package's types.  Remove once referencing
  * single-spa is possible.
- */
-export type SspaLifeCycles<TProps extends Record<string, any>> = {
-    bootstrap: LifecycleFunction<TProps>;
-    mount: LifecycleFunction<TProps>;
-    unmount: LifecycleFunction<TProps>;
+ */export type SspaLifeCycles<TProps extends Record<string, any> = Record<string, any>> = {
+    bootstrap: LifecycleFunction;
+    mount: LifecycleFunction;
+    unmount: LifecycleFunction;
     update?: (props: TProps) => Promise<void>;
 };
+
+export type InheritedSingleSpaProps = {
+    name: string;
+    singleSpa: Record<string, any>;
+    mountParcel: (
+        configFn: () => Promise<SspaLifeCycles>,
+        props: Record<string, any>,
+    ) => any;
+}
 
 /**
  * Defines the properties that single-spa inject to every mounted component.
@@ -30,28 +38,28 @@ export type SspaLifeCycles<TProps extends Record<string, any>> = {
  * **IMPORTANT**:  This should come from the single-spa package's types.  Remove once referencing
  * single-spa is possible.
  */
-export type SingleSpaProps<TProps extends Record<string, any>> = TProps & {
-    name: string;
-    singleSpa: Record<string, any>;
-    mountParcel: (
-        configFn: () => Promise<SspaLifeCycles<TProps>>,
-        props: Record<string, any>,
-    ) => any;
+export type SingleSpaProps = InheritedSingleSpaProps & Record<string, any> & {
     domElement?: HTMLElement;
-    domElementGetter?: DomElementGetterFunction<TProps>;
+    domElementGetter?: DomElementGetterFunction;
 };
 
 /**
  * Svelte options for Svelte's `mount()` function.
  */
-export type SvelteOptions<TProps extends Record<string, any>, TExports extends Record<string, any> = Record<string, any>> = Omit<Parameters<typeof mount<TProps, TExports>>['1'], 'target'>;
+export type SvelteOptions<
+    TProps extends Record<string, any> = Record<string, any>,
+    TExports extends Record<string, any> = Record<string, any>
+> = Omit<Parameters<typeof mount<TProps, TExports>>['1'], 'target'>;
 
 /**
  * Class used to track single-spa instances.
  */
-class SvelteLifeCycle<TProps extends Record<string, any>> {
+class SvelteLifeCycle<
+    TProps extends Record<string, any> = Record<string, any>
+>
+{
     #instance?: object;
-    props = $state<TProps | undefined>({} as TProps);
+    props = $state<TProps & InheritedSingleSpaProps>({} as TProps & InheritedSingleSpaProps);
 
     constructor() {
         this.#instance = undefined;
@@ -73,14 +81,14 @@ class SvelteLifeCycle<TProps extends Record<string, any>> {
  * documentation for information about each option.
  * @returns An object containing the single-spa lifecycle functions for the component.
  */
-function singleSpaSvelte<TProps extends Record<string, any>>(
+function singleSpaSvelte<TProps extends Record<string, any> = Record<string, any>>(
     component: Component<TProps>,
-    domElementGetter?: DomElementGetterFunction<TProps>,
+    domElementGetter?: DomElementGetterFunction,
     svelteOptions?: SvelteOptions<TProps>
 ): SspaLifeCycles<TProps> {
     const thisValue = new SvelteLifeCycle<TProps>();
 
-    function mountComponent(this: SvelteLifeCycle<TProps>, props: SingleSpaProps<TProps>) {
+    function mountComponent(this: SvelteLifeCycle<TProps>, props: SingleSpaProps) {
         const mergedProps = {
             ...svelteOptions?.props,
             ...props
@@ -88,30 +96,28 @@ function singleSpaSvelte<TProps extends Record<string, any>>(
         delete mergedProps.domElement;
         delete mergedProps.domElementGetter;
         for (let [k, v] of Object.entries(mergedProps)) {
+            // Due to the mixture of things single-spa does, this is not possible to type properly.  At least I can't.
+            // @ts-ignore
             this.props[k] = v;
         }
-        // this.props = { ...mergedProps };
         const target = chooseDomElementGetter(props, domElementGetter)();
         this.instance = mount(component, { ...svelteOptions, target, props: this.props });
         return Promise.resolve();
     }
 
-    function unmountComponent(this: SvelteLifeCycle<TProps>, props: SingleSpaProps<TProps>) {
+    function unmountComponent(this: SvelteLifeCycle, props: SingleSpaProps) {
         if (!this.instance) {
             throw new Error('Cannot unmount.  There is no component to unmount.');
         }
         unmount(this.instance);
         this.instance = undefined;
-        this.props = undefined;
         return Promise.resolve();
     }
 
-    function updateComponent(this: SvelteLifeCycle<TProps>, newProps: TProps) {
-        console.debug('Update!!!!: %o', newProps);
+    function updateComponent(this: SvelteLifeCycle, newProps: TProps) {
         for (let [k, v] of Object.entries(newProps)) {
             this.props[k] = v;
         }
-        // this.props = { ...newProps };
         return Promise.resolve();
     }
 
@@ -123,9 +129,9 @@ function singleSpaSvelte<TProps extends Record<string, any>>(
     };
 }
 
-function chooseDomElementGetter<TProps extends Record<string, any>>(
-    sspaProps: SingleSpaProps<TProps>,
-    domElementGetter?: DomElementGetterFunction<TProps>
+function chooseDomElementGetter(
+    sspaProps: SingleSpaProps,
+    domElementGetter?: DomElementGetterFunction
 ): () => HTMLElement {
     // This one is for parcel mounting.
     if (sspaProps.domElement) {
@@ -142,7 +148,7 @@ function chooseDomElementGetter<TProps extends Record<string, any>>(
     return defaultDomElementGetter(sspaProps);
 }
 
-function defaultDomElementGetter<TProps extends Record<string, any>>(sspaProps: SingleSpaProps<TProps>) {
+function defaultDomElementGetter(sspaProps: SingleSpaProps) {
     // Where is "appName" coming from?  Must figure out if the type should include "appName" as a property.
     const appName = sspaProps.appName || sspaProps.name;
     if (!appName) {
