@@ -24,13 +24,13 @@
             ...initialProps,
             // ...restProps
         });
-        // return async () => {
-        //     await parcel?.bootstrapPromise;
-        //     await parcel?.mountPromise;
-        //     await parcel?.unmount();
-        //     parcel = undefined;
-        //     console.debug('Parcel unmounted.');
-        // };
+        return async () => {
+            if (parcel && parcel.getStatus() !== 'MOUNTED') {
+                return;
+            }
+            await parcel?.unmount();
+            parcel = undefined;
+        };
     });
 
     $effect(() => {
