@@ -1,55 +1,6 @@
 import { mount, unmount } from "svelte";
 import { type Component } from "svelte";
-
-/**
- * Defines the function signature of all single-spa's lifecycle functions.
- *
- * **IMPORTANT**:  This should come from the single-spa package's types.  Remove once referencing
- * single-spa is possible.
- */
-export type LifecycleFunction = (sspaProps: SingleSpaProps) => Promise<void>;
-
-export type DomElementGetterFunction = (props: SingleSpaProps) => HTMLElement;
-
-/**
- * Defines the single-spa lifecycle functions.
- *
- * **IMPORTANT**:  This should come from the single-spa package's types.  Remove once referencing
- * single-spa is possible.
- */export type SspaLifeCycles<TProps extends Record<string, any> = Record<string, any>> = {
-    bootstrap: LifecycleFunction;
-    mount: LifecycleFunction;
-    unmount: LifecycleFunction;
-    update?: (props: TProps) => Promise<void>;
-};
-
-export type InheritedSingleSpaProps = {
-    name: string;
-    singleSpa: Record<string, any>;
-    mountParcel: (
-        configFn: () => Promise<SspaLifeCycles>,
-        props: Record<string, any>,
-    ) => any;
-}
-
-/**
- * Defines the properties that single-spa inject to every mounted component.
- *
- * **IMPORTANT**:  This should come from the single-spa package's types.  Remove once referencing
- * single-spa is possible.
- */
-export type SingleSpaProps = InheritedSingleSpaProps & Record<string, any> & {
-    domElement?: HTMLElement;
-    domElementGetter?: DomElementGetterFunction;
-};
-
-/**
- * Svelte options for Svelte's `mount()` function.
- */
-export type SvelteOptions<
-    TProps extends Record<string, any> = Record<string, any>,
-    TExports extends Record<string, any> = Record<string, any>
-> = Omit<Parameters<typeof mount<TProps, TExports>>['1'], 'target'>;
+import type { DomElementGetterFunction, InheritedSingleSpaProps, SingleSpaProps, SspaLifeCycles, SvelteOptions } from "./wjfe-single-spa-svelte.js";
 
 /**
  * Class used to track single-spa instances.
