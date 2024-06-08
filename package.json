@@ -42,5 +42,25 @@
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"type": "module"
+	"type": "module",
+	"repository": {
+		"url": "https://github.com/WJSoftware/wjfe-single-spa-svelte.git",
+		"type": "git"
+	},
+	"author": {
+		"email": "webJose@gmail.com",
+		"name": "José Pablo Ramírez Vargas"
+	},
+	"keywords": [
+		"svelte",
+		"single-spa",
+		"parcel",
+		"sspa",
+		"lifecycle"
+	],
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/WJSoftware/wjfe-single-spa-svelte/issues"
+	},
+	"homepage": "https://github.com/WJSoftware/wjfe-single-spa-svelte"
 }
