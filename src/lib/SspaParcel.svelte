@@ -11,6 +11,10 @@
         };
     } = $props();
 
+    if (!sspa?.config) {
+        throw new Error('Cannot render parcel because no configuration was provided.');
+    }
+
     let containerEl: HTMLDivElement;
     let parcel: Parcel | undefined;
     const initialProps = { ...restProps };
