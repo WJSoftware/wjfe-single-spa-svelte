@@ -1,15 +1,15 @@
-<script lang="ts" generics="TProps extends Record<string, any>">
+<script lang="ts">
     import { mountRootParcel, type LifeCycles, type Parcel } from 'single-spa';
 
     let {
         sspa,
         ...restProps
-    }: TProps & {
+    }: Record<string, any> & {
         sspa: {
             mountParcel: typeof mountRootParcel;
             loaderFn: () => Promise<LifeCycles>;
         };
-    } & Record<string, any> = $props();
+    } = $props();
 
     let containerEl: HTMLDivElement;
     let parcel: Parcel | undefined;
@@ -17,10 +17,8 @@
 
     $effect(() => {
         if (parcel) {
-            console.debug('Parcel-creating effect ran after parcel was created.');
             return;
         }
-        console.debug('Creating parcel.');
         parcel = sspa.mountParcel(sspa.loaderFn, {
             domElement: containerEl,
             ...initialProps,
@@ -36,12 +34,15 @@
     });
 
     $effect(() => {
-        console.debug('Parcel props changed!!! %o %o', parcel, { ...restProps });
-        parcel?.update?.({ ...restProps });
+        // For reasons yet unknown, the effect is not re-run unless the rest props are spreaded into this variable.
+        const newProps = { ...restProps };
+        parcel?.update?.(newProps);
+        // console.log('Effect!');
+        // parcel?.update?.({ ...restProps });
     });
 </script>
 
-<div bind:this="{containerEl}"></div>
+<div bind:this={containerEl}></div>
 
 <style>
     div {
