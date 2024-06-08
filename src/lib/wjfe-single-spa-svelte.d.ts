@@ -1,3 +1,5 @@
+import { mount } from "svelte";
+
 /**
  * Defines the function signature of all single-spa's lifecycle functions.
  * @param props Properties object coming from the `single-spa` library.
