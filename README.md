@@ -31,6 +31,7 @@ const lcc = singeSpaSvelte(App /*, domElementGetter, { <Svelte's mount() options
 export const bootstrap = lcc.bootstrap;
 export const mount = lcc.mount;
 export const unmount = lcc.unmount;
+export const update = lcc.update;
 ```
 
 ## Migrating from Svelte v4
@@ -52,7 +53,32 @@ const lcc = singleSpaSvelte({
 With this package, the export is not default, and the component is not part of the options.  Other than this, the 
 resulting functions should be conformant to what you are used to with `single-spa`.
 
-## The Parcel Component
+## The SspaParcel Component
 
-This package also provides a `Parcel` component that should help Svelters out there to consume `single-spa` parcels in 
-Svelte v5 projects.
+This package also provides a `SspaParcel` component that should help Svelters out there to consume `single-spa` 
+parcels in Svelte v5 projects.  It works quite similarly to `<svelte:component>`, where the component is placed in 
+markup and then via props, the component and its properties are set.
+
+```html
+<SspaParcel sspa={{ config: parcelConfig, mountParcel: mountParcelFromSingleSpa }} {...restOfParcelProperties} />
+```
+
+### The sspa Property
+
+For a `single-spa` parcel to be successfully mounted, 2 things are needed:
+
+1. The parcel configuration object or a function that returns it.
+2. The `mountParcel` or `mountRootParcel` function.
+
+The former is just the parcel's lifecycles, while the latter is the `mountParcel` function that `single-spa` injects 
+into every micro-frontend as a property, or the library's `mountRootParcel` function that is directly imported from 
+`single-spa`.
+
+> **IMPORTANT**:  It is recommended to implement the factory pattern for the lifecycle functions when it comes to 
+> parcels.  See this [GitHub issue](https://github.com/single-spa/single-spa-svelte/issues/28) opened for the Svelte 
+> v4 version of this package for details on how to implement a factory function.
+
+In the future, an automatic or semi-automatic mechanism to get a hold of `mountParcel` could be implemented in order 
+to simplify the component's use.  There is an [open discussion](https://github.com/WJSoftware/wjfe-single-spa-svelte/discussions/1) 
+where anyone can participate with ideas or anything else.  **Remember**:  Participation is what makes open source 
+software great.
