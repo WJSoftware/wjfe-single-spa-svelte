@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { mountRootParcel, type LifeCycles, type Parcel } from 'single-spa';
+    import { mountRootParcel, type Parcel, type ParcelConfig } from 'single-spa';
 
     let {
         sspa,
@@ -7,7 +7,7 @@
     }: Record<string, any> & {
         sspa: {
             mountParcel: typeof mountRootParcel;
-            loaderFn: () => Promise<LifeCycles>;
+            config: ParcelConfig;
         };
     } = $props();
 
@@ -19,10 +19,9 @@
         if (parcel) {
             return;
         }
-        parcel = sspa.mountParcel(sspa.loaderFn, {
+        parcel = sspa.mountParcel(sspa.config, {
             domElement: containerEl,
             ...initialProps,
-            // ...restProps
         });
         return async () => {
             if (parcel && parcel.getStatus() !== 'MOUNTED') {
