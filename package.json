@@ -32,6 +32,7 @@
 		"@sveltejs/package": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"publint": "^0.2.0",
+		"single-spa": "^6.0.1",
 		"svelte": "^5.0.0-next.1",
 		"svelte-check": "^3.6.0",
 		"tslib": "^2.4.1",
@@ -41,8 +42,5 @@
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"type": "module",
-	"dependencies": {
-		"single-spa": "^6.0.1"
-	}
+	"type": "module"
 }
