@@ -3,7 +3,7 @@ import { render } from '@testing-library/svelte/svelte5';
 import { SspaParcel } from './index.js';
 import { mountRootParcel } from 'single-spa';
 import type { SingleSpaProps } from './wjfe-single-spa-svelte.js';
-import { tick } from 'svelte';
+import { delay } from './utils.js';
 
 describe('SspaParcel', () => {
     test('Should throw an error if mountParcel is not provided.', () => {
@@ -108,7 +108,7 @@ describe('SspaParcel', () => {
         }
     });
     // There seems to be a bug on the rerender() method that causes the component to unmount.
-    test.skip("Should call update() whenever extra properties change their values.", async () => {
+    test("Should call update() whenever extra properties change their values.", async () => {
         // Arrange.
         let sspaProps: SingleSpaProps;
         let updatedProps: Record<string, any>;
@@ -137,7 +137,7 @@ describe('SspaParcel', () => {
             })
         };
         config.bootstrap.mockReturnValue(Promise.resolve());
-        // config.unmount.mockReturnValue(Promise.resolve());
+        config.unmount.mockReturnValue(Promise.resolve());
         const props = {
             a: 1,
             b: true
@@ -148,15 +148,16 @@ describe('SspaParcel', () => {
         };
         const component = render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel }, ...props });
         await syncMountPromise;
+        await delay(0);
 
         // Act.
-        // await component.rerender({ sspa: { config, mountParcel: mountRootParcel }, ...newProps });
-        // await syncUpdatePromise;
+        await component.rerender({ sspa: { config, mountParcel: mountRootParcel }, ...newProps });
+        await syncUpdatePromise;
 
         // Assert.
         for (let [k, v] of Object.entries(newProps)) {
             // @ts-expect-error
-            expect(updatedProps[k]).toEqual(v);
+            expect(updatedProps?.[k]).toEqual(v);
         }
     });
 });
