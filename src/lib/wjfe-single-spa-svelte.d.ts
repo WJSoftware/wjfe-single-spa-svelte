@@ -34,7 +34,7 @@ export type SspaLifeCycles<TProps extends Record<string, any> = Record<string, a
      * @param props Updated set of properties for the parcel.
      * @returns A promise that resolves once the update has completed.
      */
-    update?: (props: TProps) => Promise<void>;
+    update: (props: TProps) => Promise<void>;
 };
 
 /**
