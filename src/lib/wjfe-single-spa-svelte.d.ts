@@ -4,7 +4,7 @@ import { mount } from "svelte";
  * Defines the function signature of all single-spa's lifecycle functions.
  * @param props Properties object coming from the `single-spa` library.
  */
-export type LifecycleFunction = (sspaProps: SingleSpaProps) => Promise<void>;
+export type LifecycleFunction = (sspaProps: SingleSpaProps) => Promise<void> | undefined;
 
 /**
  * Defines the function signature of the domElementGetter function.
