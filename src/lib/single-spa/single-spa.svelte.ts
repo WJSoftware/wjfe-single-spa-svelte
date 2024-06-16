@@ -1,6 +1,6 @@
 import { mount, unmount } from "svelte";
 import { type Component } from "svelte";
-import type { DomElementGetterFunction, InheritedSingleSpaProps, SingleSpaProps, SspaLifeCycles, SvelteOptions } from "./wjfe-single-spa-svelte.js";
+import type { DomElementGetterFunction, InheritedSingleSpaProps, SingleSpaProps, SspaLifeCycles, SvelteOptions } from "../wjfe-single-spa-svelte.js";
 
 /**
  * Class used to track single-spa instances.
