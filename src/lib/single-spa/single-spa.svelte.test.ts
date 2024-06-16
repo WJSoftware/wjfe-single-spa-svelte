@@ -2,7 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { screen } from '@testing-library/svelte';
 import singleSpaSvelteFactory from './single-spa.svelte.js';
 import TestComponent from './TestComponent.test.svelte';
-import type { SvelteOptions } from './wjfe-single-spa-svelte.js';
+import type { SvelteOptions } from '../wjfe-single-spa-svelte.js';
 import type { ComponentProps } from 'svelte';
 
 const mountMock = vi.fn();
