@@ -1,3 +1,4 @@
+/// <reference types="svelte" />
 import { mount } from "svelte";
 
 /**
