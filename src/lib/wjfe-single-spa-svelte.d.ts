@@ -39,6 +39,68 @@ export type SspaLifeCycles<TProps extends Record<string, any> = Record<string, a
 };
 
 /**
+ * Defines the single-spa parcel object.
+ */
+type Parcel<TProps extends Record<string, any> = Record<string, any>> = {
+    /**
+     * Mounts the parcel.
+     */
+    mount(): Promise<null>;
+    /**
+     * Unmounts the parcel.
+     */
+    unmount(): Promise<null>;
+    /**
+     * Update the parcel's properties.
+     * @param customProps Properties for the parcel.
+     */
+    update?(customProps: TProps): Promise<any>;
+    /**
+     * Obtains the parcel's current status.
+     */
+    getStatus():
+        | "NOT_LOADED"
+        | "LOADING_SOURCE_CODE"
+        | "NOT_BOOTSTRAPPED"
+        | "BOOTSTRAPPING"
+        | "NOT_MOUNTED"
+        | "MOUNTING"
+        | "MOUNTED"
+        | "UPDATING"
+        | "UNMOUNTING"
+        | "UNLOADING"
+        | "SKIP_BECAUSE_BROKEN"
+        | "LOAD_ERROR";
+    /**
+     * Load promise.
+     */
+    loadPromise: Promise<null>;
+    /**
+     * Bootstrap promise.
+     */
+    bootstrapPromise: Promise<null>;
+    /**
+     * Mount promise.
+     */
+    mountPromise: Promise<null>;
+    /**
+     * Unmount promise.
+     */
+    unmountPromise: Promise<null>;
+};
+
+/**
+* Defines the call signature of the `mountParcel` function.
+* @param config `single-spa` configuration object, or a function that returns a promise for said object.
+* @param props Properties that will be passed to the parcel on mounting.
+* @returns The `single-spa` parcel object.
+*/
+export type MountParcelFn<TProps extends Record<string, any> = Record<string, any>> = (
+    config: SspaLifeCycles | (() => Promise<SspaLifeCycles>),
+    props: TProps & { domElement: HTMLElement },
+) => Parcel<TProps>;
+
+/**
  * Defines the properties that every micro-frontend and parcel receive from `single-spa`.
  */
 export type InheritedSingleSpaProps = {
@@ -52,14 +114,8 @@ export type InheritedSingleSpaProps = {
     singleSpa: Record<string, any>;
     /**
      * Mounts a parcel instance in the `domElement` HTML element provided through the `props` parameter.
-     * @param config `single-spa` configuration object, or a function that returns a promise for said object.
-     * @param props Properties that will be passed to the parcel on mounting.
-     * @returns The `single-spa` parcel object.
      */
-    mountParcel: (
-        config: SspaLifeCycles | (() => Promise<SspaLifeCycles>),
-        props: Record<string, any> & { domElement: HTMLElement },
-    ) => any;
+    mountParcel: MountParcelFn;
 }
 
 /**
