@@ -1,9 +1,9 @@
-import { describe, test, expect, vi } from 'vitest';
-import { render } from '@testing-library/svelte/svelte5';
-import { SspaParcel } from '../index.js';
+import { render } from '@testing-library/svelte';
 import { mountRootParcel } from 'single-spa';
-import type { SingleSpaProps } from '../wjfe-single-spa-svelte.js';
+import { describe, expect, test, vi } from 'vitest';
+import { SspaParcel } from '../index.js';
 import { delay } from '../utils.js';
+import type { SingleSpaProps } from '../wjfe-single-spa-svelte.js';
 
 describe('SspaParcel', () => {
     test('Should throw an error if mountParcel is not provided.', () => {
