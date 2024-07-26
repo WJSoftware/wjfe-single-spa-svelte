@@ -1,9 +1,9 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { screen } from '@testing-library/svelte';
+import { type ComponentProps } from 'svelte';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import type { SvelteOptions } from '../wjfe-single-spa-svelte.js';
 import singleSpaSvelteFactory from './single-spa.svelte.js';
 import TestComponent from './TestComponent.test.svelte';
-import type { SvelteOptions } from '../wjfe-single-spa-svelte.js';
-import type { ComponentProps } from 'svelte';
 
 const mountMock = vi.fn();
 const unmountMock = vi.fn();
@@ -205,8 +205,7 @@ describe('singleSpaSvelte', () => {
             // Assert.
             expect(didThrow).toEqual(true);
         });
-        // Unable to make this work ATM.
-        test.skip('Should pass the updated properties to the component.', async () => {
+        test('Should pass the updated properties to the component.', async () => {
             // Arrange.
             const sspaProps = {
                 mountParcel: vi.fn(),
@@ -226,7 +225,7 @@ describe('singleSpaSvelte', () => {
 
             // Assert.
             const element = screen.getByRole('alert');
-            expect(element.getAttribute('data-propA')).toEqual(true);
+            expect(element.getAttribute('data-propA')).toEqual("true");
         });
     });
 });
