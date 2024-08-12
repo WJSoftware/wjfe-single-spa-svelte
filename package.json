@@ -30,7 +30,7 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.5.18",
-		"@sveltejs/package": "^2.0.0",
+		"@sveltejs/package": "^2.3.4",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@testing-library/svelte": "^5.2.1",
 		"jsdom": "^24.1.1",
