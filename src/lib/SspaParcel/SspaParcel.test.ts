@@ -1,8 +1,8 @@
+import { delay } from '$lib/utils.js';
 import { render } from '@testing-library/svelte';
 import { mountRootParcel } from 'single-spa';
 import { describe, expect, test, vi } from 'vitest';
 import { SspaParcel } from '../index.js';
-import { delay } from '../utils.js';
 import type { SingleSpaProps } from '../wjfe-single-spa-svelte.js';
 
 describe('SspaParcel', () => {
@@ -44,21 +44,15 @@ describe('SspaParcel', () => {
         render(SspaParcel, { sspa: { config, mountParcel } });
 
         // Assert.
-        // expect(config.mount).toHaveBeenCalledOnce();
         expect(mountParcel).toHaveBeenCalledOnce();
     });
     test("Should include the domElement property when calling the config's mount() function.", async () => {
         // Arrange.
         let sspaProps = {} as SingleSpaProps;
-        let syncPromiseRslv: Function;
-        const syncPromise = new Promise<void>((rslv, rjct) => {
-            syncPromiseRslv = rslv;
-        });
         const config = {
             bootstrap: vi.fn(),
             mount: vi.fn(x => {
                 sspaProps = x;
-                syncPromiseRslv();
                 return Promise.resolve();
             }),
             unmount: vi.fn(),
@@ -68,8 +62,8 @@ describe('SspaParcel', () => {
         config.unmount.mockReturnValue(Promise.resolve());
 
         // Act.
-        const component = render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel } });
-        await syncPromise;
+        render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel } });
+        await delay(0);
 
         // Assert.
         expect(sspaProps.domElement).toBeTruthy();
@@ -77,15 +71,10 @@ describe('SspaParcel', () => {
     test("Should include any extra properties when calling the config's mount() function.", async () => {
         // Arrange.
         let sspaProps = {} as SingleSpaProps;
-        let syncPromiseRslv: Function;
-        const syncPromise = new Promise<void>((rslv, rjct) => {
-            syncPromiseRslv = rslv;
-        });
         const config = {
             bootstrap: vi.fn(),
             mount: vi.fn(x => {
                 sspaProps = x;
-                syncPromiseRslv();
                 return Promise.resolve();
             }),
             unmount: vi.fn(),
@@ -99,40 +88,29 @@ describe('SspaParcel', () => {
         };
 
         // Act.
-        const component = render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel }, ...props });
-        await syncPromise;
+        render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel }, ...props });
+        await delay(0);
 
         // Assert.
         for (let [k, v] of Object.entries(props)) {
             expect(sspaProps[k]).toEqual(v);
         }
     });
-    // There seems to be a bug on the rerender() method that causes the component to unmount.
     test("Should call update() whenever extra properties change their values.", async () => {
         // Arrange.
         let sspaProps: SingleSpaProps;
         let updatedProps: Record<string, any>;
-        let syncMountPromiseRslv: Function;
-        const syncMountPromise = new Promise<void>((rslv, rjct) => {
-            syncMountPromiseRslv = rslv;
-        });
-        let syncUpdatePromiseRslv: Function;
-        const syncUpdatePromise = new Promise<void>((rslv, rjct) => {
-            syncUpdatePromiseRslv = rslv;
-        });
         const config = {
             bootstrap: vi.fn(),
             mount: vi.fn(x => {
                 sspaProps = x;
                 sspaProps.singleSpa = {};
                 delete sspaProps.domElement;
-                syncMountPromiseRslv();
                 return Promise.resolve();
             }),
             unmount: vi.fn(),
             update: vi.fn(x => {
                 updatedProps = x;
-                syncUpdatePromiseRslv();
                 return Promise.resolve();
             })
         };
@@ -147,12 +125,10 @@ describe('SspaParcel', () => {
             b: false
         };
         const component = render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel }, ...props });
-        await syncMountPromise;
-        await delay(0);
 
         // Act.
         await component.rerender({ sspa: { config, mountParcel: mountRootParcel }, ...newProps });
-        await syncUpdatePromise;
+        await delay(0);
 
         // Assert.
         for (let [k, v] of Object.entries(newProps)) {

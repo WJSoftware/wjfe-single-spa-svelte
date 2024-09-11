@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { MountParcelFn, Parcel } from "$lib/wjfe-single-spa-svelte.js";
+    import { onMount } from "svelte";
 
     let {
         sspa,
@@ -28,15 +29,12 @@
 
     let containerEl: HTMLDivElement;
     let parcel: Parcel | undefined;
-    const initialProps = { ...restProps };
+    let firstRun = true;
 
-    $effect(() => {
-        if (parcel) {
-            return;
-        }
+    onMount(() => {
         parcel = sspa.mountParcel(sspa.config, {
             domElement: containerEl,
-            ...initialProps,
+            ...restProps,
         });
         return async () => {
             if (parcel && parcel.getStatus() !== 'MOUNTED') {
@@ -48,12 +46,25 @@
     });
 
     $effect(() => {
-        // For reasons yet unknown, the effect is not re-run unless the rest props are spreaded into this variable.
+        // Must be the first line so the dependency on restProps is tracked.
         const newProps = { ...restProps };
-        parcel?.update?.(newProps);
-        // parcel?.update?.({ ...restProps });
+        if (firstRun) {
+            firstRun = false;
+            return;
+        }
+        parcel?.mountPromise.then(() => {
+            parcel!.update?.(newProps);
+        });
     });
 </script>
+
+<div bind:this={containerEl}></div>
+
+<style>
+    div {
+        display: contents;
+    }
+</style>
 
 <!--
 @component
@@ -99,11 +110,3 @@ Mounting a parcel with extra properties that are native to the parcel being moun
 As seen in the above examples, event handlers can be passed as well thanks to Svelte v5's new design.  Yes, snippets 
 can also be passed along as props.
 -->
-
-<div bind:this={containerEl}></div>
-
-<style>
-    div {
-        display: contents;
-    }
-</style>
