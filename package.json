@@ -46,7 +46,7 @@
 	"types": "./dist/wjfe-single-spa-svelte.d.ts",
 	"type": "module",
 	"repository": {
-		"url": "https://github.com/WJSoftware/wjfe-single-spa-svelte.git",
+		"url": "git+https://github.com/WJSoftware/wjfe-single-spa-svelte.git",
 		"type": "git"
 	},
 	"author": {
