@@ -1,27 +1,15 @@
-import { mount, unmount } from "svelte";
-import { type Component } from "svelte";
-import type { DomElementGetterFunction, InheritedSingleSpaProps, SingleSpaProps, SspaLifeCycles, SvelteOptions } from "../wjfe-single-spa-svelte.js";
+import { mount, unmount, type Component } from "svelte";
+import type { DomElementGetterFunction, InheritedSingleSpaProps, LifecycleOptions, SingleSpaProps, SspaLifeCycles } from "../wjfe-single-spa-svelte.js";
 
 /**
  * Class used to track single-spa instances.
  */
 class SvelteLifeCycle<
     TProps extends Record<string, any> = Record<string, any>
->
-{
-    #instance?: object;
+> {
+    instance?: object;
     props = $state<TProps & InheritedSingleSpaProps>({} as TProps & InheritedSingleSpaProps);
-
-    constructor() {
-        this.#instance = undefined;
-    }
-
-    get instance() {
-        return this.#instance;
-    }
-    set instance(newInstance) {
-        this.#instance = newInstance;
-    }
+    target?: HTMLElement;
 }
 
 /**
@@ -39,19 +27,22 @@ function singleSpaSvelteFactory(
     return function <TProps extends Record<string, any> = Record<string, any>>(
         component: Component<TProps>,
         domElementGetter?: DomElementGetterFunction,
-        svelteOptions?: SvelteOptions<TProps>
+        options?: LifecycleOptions<TProps>
     ): SspaLifeCycles<TProps> {
         if (!component) {
             throw new Error('No component was passed to the function.');
         }
+        if ((options?.svelteOptions as any)?.target) {
+            throw new Error("Providing the 'target' option via 'svelteOptions' is disallowed.");
+        }
         const thisValue = new SvelteLifeCycle<TProps>();
 
-        function mountComponent(this: SvelteLifeCycle<TProps>, props: SingleSpaProps) {
+        async function mountComponent(this: SvelteLifeCycle<TProps>, props: SingleSpaProps) {
             if (this.instance) {
                 return Promise.reject(new Error('Cannot mount:  The component is currently mounted.'));
             }
             const mergedProps = {
-                ...svelteOptions?.props,
+                ...options?.svelteOptions?.props,
                 ...props
             };
             delete mergedProps.domElement;
@@ -61,23 +52,19 @@ function singleSpaSvelteFactory(
                 // @ts-ignore
                 this.props[k] = v;
             }
-            try {
-                const target = chooseDomElementGetter(props, domElementGetter)();
-                this.instance = mountFn(component, { ...svelteOptions, target, props: this.props });
-                return Promise.resolve();
-            }
-            catch (err) {
-                return Promise.reject(err);
-            }
+            this.target = chooseDomElementGetter(props, domElementGetter)();
+            await options?.preMount?.(this.target);
+            this.instance = mountFn(component, { ...options?.svelteOptions, target: this.target, props: this.props });
         }
 
-        function unmountComponent(this: SvelteLifeCycle, props: SingleSpaProps) {
+        async function unmountComponent(this: SvelteLifeCycle, props: SingleSpaProps) {
             if (!this.instance) {
                 return Promise.reject(new Error('Cannot unmount:  There is no component to unmount.'));
             }
             unmountFn(this.instance);
+            await options?.postUnmount?.(this.target!);
             this.instance = undefined;
-            return Promise.resolve();
+            this.target = undefined;
         }
 
         function updateComponent(this: SvelteLifeCycle, newProps: TProps) {

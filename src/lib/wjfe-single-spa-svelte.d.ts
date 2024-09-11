@@ -138,9 +138,36 @@ export type SingleSpaProps = InheritedSingleSpaProps & Record<string, any> & {
 };
 
 /**
- * Svelte options for Svelte's `mount()` function.
+ * Options for Svelte's `mount()` function.
  */
 export type SvelteOptions<
     TProps extends Record<string, any> = Record<string, any>,
     TExports extends Record<string, any> = Record<string, any>
 > = Omit<Parameters<typeof mount<TProps, TExports>>['1'], 'target'>;
+
+/**
+ * Options given to the lifecycle-creation function.
+ */
+export type LifecycleOptions<
+    TProps extends Record<string, any> = Record<string, any>,
+    TExports extends Record<string, any> = Record<string, any>
+> = {
+    /**
+     * Optional function to be run immediately before Svelte mounts the component.
+     * 
+     * An error thrown from this function will make the mount promise to reject.
+     * @param target HTML element where the Svelte component will be mounted in.
+     */
+    preMount?: (target: HTMLElement) => Promise<void> | void;
+    /**
+     * Optional function to be run immediately after Svelte unmounts the component.
+     * 
+     * An error thrown from this function will make the unmount promise to reject.
+     * @param target HTML element where the Svelte component was mounted in.
+     */
+    postUnmount?: (target: HTMLElement) => Promise<void> | void;
+    /**
+     * Optional options for Svelte's `mount()` function.
+     */
+    svelteOptions?: SvelteOptions<TProps, TExports>;
+};

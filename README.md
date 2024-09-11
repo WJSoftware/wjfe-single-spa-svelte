@@ -26,7 +26,7 @@ Now use it to create lifecycle functions, almost as with the v4 version from the
 import { singleSpaSvelte } from '@wjfe/single-spa-svelte';
 import App from './App.svelte';
 
-const lcc = singeSpaSvelte(App /*, domElementGetter, { <Svelte's mount() options> } */);
+const lcc = singeSpaSvelte(App /*, domElementGetter, { options } */);
 
 export const bootstrap = lcc.bootstrap;
 export const mount = lcc.mount;
@@ -38,9 +38,9 @@ export const update = lcc.update;
 
 As seen in the previous code snippet, it is almost identical.  The differences are in the arguments passed to the 
 function.  The NPM package from the `single-spa` team receives a single argument, while this version can receive up to 
-three arguments.  This makes coding easier because there is no cleaning up/separation of properties to be done.
+three arguments.
 
-Before:
+Before (`single-spa-svelte` package from the `single-spa` team):
 
 ```typescript
 import singleSpaSvelte from 'single-spa-svelte';
@@ -52,6 +52,28 @@ const lcc = singleSpaSvelte({
 
 With this package, the export is not default, and the component is not part of the options.  Other than this, the 
 resulting functions should be conformant to what you are used to with `single-spa`.
+
+## The Options Parameter
+
+As seen in the Quickstart, `singleSpaSvelte`'s third parameter is named "options".  It accepts 3 properties:
+
++ `preMount`:  Optional function that is run just before mounting the Svelte component.
++ `postUnmount`:  Optionsl function that is run immediately after unmounting the Svelte component.
++ `svelteOptions`:  Optional set of options for Svelte's `mount` function.
+
+For details on the last one, refer to Svelte's documentation.  All properties are accepted, except for `target`.
+
+The other two are optional functions that receive as only argument the target HTML element where the component will be 
+mounted in (or it was mounted in).  This is useful if you need to manipulate this element in any way.  The use case that gave birth to this feature was to add CSS classes to the element, which need to be removed upon unmounting:
+
+```typescript
+const lcc = singeSpaSvelte(App , undefined, {
+    preMount: (target) => target.classList.add('flex-fill'),
+    postUnmount: (target) => target.classList.remove('flex-fill'),
+});
+```
+
+The `target` parameter is guaranteed to be defined.
 
 ## The SspaParcel Component
 
