@@ -101,6 +101,13 @@ export type MountParcelFn<TProps extends Record<string, any> = Record<string, an
 ) => Parcel<TProps>;
 
 /**
+ * Defines the contents of the `single-spa` library.
+ * 
+ * This should come from the `single-spa` package itself, so this type is a mere placeholder.
+ */
+export type SingleSpaLibrary = Record<string, any>;
+
+/**
  * Defines the properties that every micro-frontend and parcel receive from `single-spa`.
  */
 export type InheritedSingleSpaProps = {
@@ -109,9 +116,9 @@ export type InheritedSingleSpaProps = {
      */
     name: string;
     /**
-     * The entire `single-spa` library.
+     * The complete `single-spa` library instance.
      */
-    singleSpa: Record<string, any>;
+    singleSpa: SingleSpaLibrary;
     /**
      * Mounts a parcel instance in the `domElement` HTML element provided through the `props` parameter.
      */
@@ -170,4 +177,19 @@ export type LifecycleOptions<
      * Optional options for Svelte's `mount()` function.
      */
     svelteOptions?: SvelteOptions<TProps, TExports>;
+};
+
+/**
+ * Defines the shape of the context stored at the level of the root component (the component mounted via the 
+ * `singleSpaSvelte()` function).
+ */
+export type SingleSpaContext = {
+    /**
+     * The complete `single-spa` library instance.
+     */
+    library: SingleSpaLibrary;
+    /**
+     * The parcel-mounting function assigned to the micro-frontend.
+     */
+    mountParcel: MountParcelFn;
 };

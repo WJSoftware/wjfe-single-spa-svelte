@@ -184,6 +184,51 @@ describe('singleSpaSvelte', () => {
             // Assert.
             expect(didThrow).toEqual(true);
         });
+        test('Should store the single-spa library instance and the mountParcel function in context.', async () => {
+            // Arrange.
+            const sspaProps = {
+                mountParcel: vi.fn(),
+                name: 'the-name',
+                singleSpa: {
+                    mountRootParcel: vi.fn()
+                }
+            };
+            const lc = singleSpaSvelteFactory()(TestComponent);
+
+            // Act.
+            await lc.mount(sspaProps);
+            // Clean-up.
+            await lc.unmount(sspaProps);
+
+            // Assert.
+            expect(sspaProps.mountParcel).toHaveBeenCalledOnce();
+            expect(sspaProps.singleSpa.mountRootParcel).toHaveBeenCalledOnce();
+        });
+        test('Should store the single-spa library instance and the mountParcel function in the incoming context.', async () => {
+            // Arrange.
+            const sspaProps = {
+                mountParcel: vi.fn(),
+                name: 'the-name',
+                singleSpa: {
+                    mountRootParcel: vi.fn()
+                }
+            };
+            const extraContext = vi.fn();
+            const context = new Map([
+                ["extra", extraContext]
+            ]);
+            const lc = singleSpaSvelteFactory()(TestComponent, undefined, { svelteOptions: { context }});
+
+            // Act.
+            await lc.mount(sspaProps);
+            // Clean-up.
+            await lc.unmount(sspaProps);
+
+            // Assert.
+            expect(sspaProps.mountParcel).toHaveBeenCalledOnce();
+            expect(sspaProps.singleSpa.mountRootParcel).toHaveBeenCalledOnce();
+            expect(extraContext).toHaveBeenCalledOnce();
+        });
     });
     describe('unmount', () => {
         test('Should throw an error if called when there is nothing mounted.', async () => {
@@ -338,6 +383,8 @@ describe('singleSpaSvelte', () => {
             // Assert.
             const element = screen.getByRole('alert');
             expect(element.getAttribute('data-propA')).toEqual("true");
+            // Clean-up.
+            await lc.unmount(sspaProps);
         });
     });
 });

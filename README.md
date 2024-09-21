@@ -55,6 +55,8 @@ resulting functions should be conformant to what you are used to with `single-sp
 
 ## The Options Parameter
 
+> Since **v0.4.0**
+
 As seen in the Quickstart, `singleSpaSvelte`'s third parameter is named "options".  It accepts 3 properties:
 
 + `preMount`:  Optional function that is run just before mounting the Svelte component.
@@ -92,15 +94,16 @@ For a `single-spa` parcel to be successfully mounted, 2 things are needed:
 1. The parcel configuration object or a function that returns it.
 2. The `mountParcel` or `mountRootParcel` function.
 
+> [!IMPORTANT]
+> It is recommended to implement the factory pattern for the lifecycle functions when it comes to parcels.  See this 
+> [GitHub issue](https://github.com/single-spa/single-spa-svelte/issues/28) opened for the Svelte v4 version of this 
+> package for details on how to implement a factory function.
+
 The former is just the parcel's lifecycles, while the latter is the `mountParcel` function that `single-spa` injects 
 into every micro-frontend as a property, or the library's `mountRootParcel` function that is directly imported from 
 `single-spa`.
 
-> **IMPORTANT**:  It is recommended to implement the factory pattern for the lifecycle functions when it comes to 
-> parcels.  See this [GitHub issue](https://github.com/single-spa/single-spa-svelte/issues/28) opened for the Svelte 
-> v4 version of this package for details on how to implement a factory function.
+> Since **v0.5.0**
 
-In the future, an automatic or semi-automatic mechanism to get a hold of `mountParcel` could be implemented in order 
-to simplify the component's use.  There is an [open discussion](https://github.com/WJSoftware/wjfe-single-spa-svelte/discussions/1) 
-where anyone can participate with ideas or anything else.  **Remember**:  Participation is what makes open source 
-software great.
+The `sspa.mountParcel` property is, under normal circumstances, unneeded because this package makes it available 
+through context.  You should only ever care about the `sspa.config` property.

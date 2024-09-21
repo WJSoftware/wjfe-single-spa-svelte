@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { getSingleSpaContext } from "$lib/singleSpaContext.js";
     import type { MountParcelFn, Parcel } from "$lib/wjfe-single-spa-svelte.js";
     import { onMount } from "svelte";
 
@@ -12,10 +13,9 @@
          */
         sspa: {
             /**
-             * The mountParcel function to use to mount the parcel.  Pass the function received from single-spa if 
-             * available; otherwise you may use single-spa's mountRootParcel function.
+             * The `mountParcel` function to use to mount the parcel.
              */
-            mountParcel: MountParcelFn;
+            mountParcel?: MountParcelFn;
             /**
              * Parcel configuration object, or a function that returns a promise with the configuration object.
              */
@@ -32,7 +32,9 @@
     let firstRun = true;
 
     onMount(() => {
-        parcel = sspa.mountParcel(sspa.config, {
+        // The needed mountParcel() function may come from props or could be in context.
+        const mountParcelFn = sspa.mountParcel ?? getSingleSpaContext()?.mountParcel;
+        parcel = mountParcelFn(sspa.config, {
             domElement: containerEl,
             ...restProps,
         });
@@ -69,6 +71,8 @@
 <!--
 @component
 
+# SspaParcel
+
 The `SspaParcel` Svelte component can be used to embed `single-spa` parcel components.  Parcel components can be 
 written using any framework or library (React, Vue, Svelte, Lit, HTMX, etc.) as long as the final result is a module 
 that exports the parcel lifecycle functions.
@@ -78,9 +82,17 @@ information.
 
 ## The `sspa` Prop
 
-This must be an object with the two required pieces of information:  The `mountParcel` function to use when mounting 
+This must be an object with one required and one optional properties:  The `mountParcel` function to use when mounting 
 the parcel, and the parcel configuration object (the object with the lifecycle functions).  The latter can also be a 
-function that returns a promise with said configuration object.
+function that returns a promise with said configuration object.  The former is the optional property; the latter is the 
+required one.
+
+### About `mountParcel`
+
+As you probably know, `mountParcel` is the function used to mount parcels.  This function is "calculated" specially 
+for every mounted micro-frontend.  This NPM package (`@wjfe/single-spa-svelte`) stores this function in context so 
+`SspaParcel` instances can automatically retrieve it.  This mechanism allows `sspa.mountParcel` to be optional (and 
+largely unnecessary).
 
 ## Examples
 

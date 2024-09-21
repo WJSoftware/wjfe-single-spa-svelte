@@ -1,3 +1,4 @@
+import { singleSpaContextKey } from '$lib/singleSpaContext.js';
 import { delay } from '$lib/utils.js';
 import { render } from '@testing-library/svelte';
 import { mountRootParcel } from 'single-spa';
@@ -16,7 +17,6 @@ describe('SspaParcel', () => {
         };
 
         // Act.
-        // @ts-expect-error
         const act = () => render(SspaParcel, { sspa: { config } });
 
         // Assert.
@@ -135,5 +135,21 @@ describe('SspaParcel', () => {
             // @ts-expect-error
             expect(updatedProps?.[k]).toEqual(v);
         }
+    });
+    test("Should obtain the mountParcel function from context.", () => {
+        // Arrange.
+        const config = {
+            bootstrap: vi.fn(),
+            mount: vi.fn(),
+            unmount: vi.fn(),
+            update: vi.fn()
+        };
+        const mountParcel = vi.fn();
+
+        // Act.
+        render(SspaParcel, { context: new Map([[singleSpaContextKey, { mountParcel }]]), props: { sspa: { config } } });
+
+        // Assert.
+        expect(mountParcel).toHaveBeenCalledOnce();
     });
 });
