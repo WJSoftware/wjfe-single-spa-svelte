@@ -1,10 +1,3 @@
-export function delay(ms: number) {
-    let rslv: () => void;
-    const promise = new Promise<void>((rs, rj) => {
-        rslv = rs;
-    });
-    setTimeout(() => {
-        rslv();
-    }, ms);
-    return promise;
+export function delay(timeout?: number) {
+    return new Promise<void>((rs) => setTimeout(() => rs(), timeout));
 }
