@@ -56,13 +56,7 @@ function singleSpaSvelteFactory(
             this.target = chooseDomElementGetter(props, domElementGetter)();
             await options?.preMount?.(this.target);
             // Don't lose any potential incoming context.
-            let context: Map<any, any>;
-            if (options?.svelteOptions?.context) {
-                context = options.svelteOptions.context;
-            }
-            else {
-                context = new Map();
-            }
+            let context = options?.svelteOptions?.context ?? new Map();
             context.set(singleSpaContextKey, {
                 library: props.singleSpa,
                 mountParcel: props.mountParcel ?? props.singleSpa.mountRootParcel
