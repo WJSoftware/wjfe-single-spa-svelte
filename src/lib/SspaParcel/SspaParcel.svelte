@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { getSingleSpaContext } from "$lib/singleSpaContext.js";
     import type { MountParcelFn, Parcel } from "$lib/wjfe-single-spa-svelte.js";
     import { onMount } from "svelte";
 
@@ -11,11 +12,6 @@
          * it.
          */
         sspa: {
-            /**
-             * The mountParcel function to use to mount the parcel.  Pass the function received from single-spa if 
-             * available; otherwise you may use single-spa's mountRootParcel function.
-             */
-            mountParcel: MountParcelFn;
             /**
              * Parcel configuration object, or a function that returns a promise with the configuration object.
              */
@@ -32,7 +28,12 @@
     let firstRun = true;
 
     onMount(() => {
-        parcel = sspa.mountParcel(sspa.config, {
+        // The needed mountParcel() function from context.
+        const mountParcelFn = getSingleSpaContext()?.mountParcel;
+        if (typeof mountParcelFn !== 'function') {
+            throw new Error('Unexpected:  The single-spa context did not carry the "mountParcel" function.');
+        }
+        parcel = mountParcelFn(sspa.config, {
             domElement: containerEl,
             ...restProps,
         });
@@ -69,6 +70,8 @@
 <!--
 @component
 
+# SspaParcel
+
 The `SspaParcel` Svelte component can be used to embed `single-spa` parcel components.  Parcel components can be 
 written using any framework or library (React, Vue, Svelte, Lit, HTMX, etc.) as long as the final result is a module 
 that exports the parcel lifecycle functions.
@@ -78,9 +81,8 @@ information.
 
 ## The `sspa` Prop
 
-This must be an object with the two required pieces of information:  The `mountParcel` function to use when mounting 
-the parcel, and the parcel configuration object (the object with the lifecycle functions).  The latter can also be a 
-function that returns a promise with said configuration object.
+This must be an object with one required property:  The parcel configuration object (the object with the lifecycle 
+functions).  This can also be a function that returns a promise with said configuration object.
 
 ## Examples
 
@@ -95,16 +97,16 @@ function loadParcel() {
 }
 ```
 
-Mounting a parcel with no custom (or parcel-native) properties:
+### Mounting a parcel with no custom (or parcel-native) properties
 
 ```html
-<SspaParcel sspa={{ mountParcel, config: loadParcel }} />
+<SspaParcel sspa={{ config: loadParcel }} />
 ```
 
-Mounting a parcel with extra properties that are native to the parcel being mounted:
+### Mounting a parcel with extra properties that are native to the parcel being mounted
 
 ```html
-<SspaParcel sspa={{ mountParcel, config: loadParcel }} showSomething={true} onclick={() => console.log('clicked!')} />
+<SspaParcel sspa={{ config: loadParcel }} showSomething={true} onclick={() => console.log('clicked!')} />
 ```
 
 As seen in the above examples, event handlers can be passed as well thanks to Svelte v5's new design.  Yes, snippets 

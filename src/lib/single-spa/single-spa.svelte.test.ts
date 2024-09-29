@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/svelte';
 import { type ComponentProps } from 'svelte';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { SvelteOptions } from '../wjfe-single-spa-svelte.js';
+import type { MountOptions } from '../wjfe-single-spa-svelte.js';
 import singleSpaSvelteFactory from './single-spa.svelte.js';
 import TestComponent from './TestComponent.test.svelte';
 
@@ -33,14 +33,14 @@ describe('singleSpaSvelte', () => {
         expect(lc.unmount).toBeTypeOf('function');
         expect(lc.update).toBeTypeOf('function');
     });
-    test('Should throw an error if options.svelteOptions define the "target" property.', () => {
+    test('Should throw an error if options.mountOptions define the "target" property.', () => {
         // Arrange.
         let didThrow = false;
 
         // Act.
         try {
-            //@ts-expect-error The target property is disallowed in svelteOptions.
-            singleSpaSvelte(TestComponent, undefined, { svelteOptions: { target: {} } });
+            //@ts-expect-error The target property is disallowed in mountOptions.
+            singleSpaSvelte(TestComponent, undefined, { mountOptions: { target: {} } });
         }
         catch {
             didThrow = true;
@@ -98,12 +98,12 @@ describe('singleSpaSvelte', () => {
         });
         test("Should call Svelte's mount().", async () => {
             // Arrange.
-            const mountProps: SvelteOptions<ComponentProps<TestComponent>> = {
+            const mountProps: MountOptions<ComponentProps<typeof TestComponent>> = {
                 props: {
                     propA: true
                 }
             };
-            const lc = singleSpaSvelte(TestComponent, undefined, { svelteOptions: mountProps });
+            const lc = singleSpaSvelte(TestComponent, undefined, { mountOptions: mountProps });
 
             // Act.
             await lc.mount({
@@ -183,6 +183,51 @@ describe('singleSpaSvelte', () => {
 
             // Assert.
             expect(didThrow).toEqual(true);
+        });
+        test('Should store the single-spa library instance and the mountParcel function in context.', async () => {
+            // Arrange.
+            const sspaProps = {
+                mountParcel: vi.fn(),
+                name: 'the-name',
+                singleSpa: {
+                    mountRootParcel: vi.fn()
+                }
+            };
+            const lc = singleSpaSvelteFactory()(TestComponent);
+
+            // Act.
+            await lc.mount(sspaProps);
+            // Clean-up.
+            await lc.unmount(sspaProps);
+
+            // Assert.
+            expect(sspaProps.mountParcel).toHaveBeenCalledOnce();
+            expect(sspaProps.singleSpa.mountRootParcel).toHaveBeenCalledOnce();
+        });
+        test('Should store the single-spa library instance and the mountParcel function in the incoming context.', async () => {
+            // Arrange.
+            const sspaProps = {
+                mountParcel: vi.fn(),
+                name: 'the-name',
+                singleSpa: {
+                    mountRootParcel: vi.fn()
+                }
+            };
+            const extraContext = vi.fn();
+            const context = new Map([
+                ["extra", extraContext]
+            ]);
+            const lc = singleSpaSvelteFactory()(TestComponent, undefined, { mountOptions: { context }});
+
+            // Act.
+            await lc.mount(sspaProps);
+            // Clean-up.
+            await lc.unmount(sspaProps);
+
+            // Assert.
+            expect(sspaProps.mountParcel).toHaveBeenCalledOnce();
+            expect(sspaProps.singleSpa.mountRootParcel).toHaveBeenCalledOnce();
+            expect(extraContext).toHaveBeenCalledOnce();
         });
     });
     describe('unmount', () => {
@@ -338,6 +383,8 @@ describe('singleSpaSvelte', () => {
             // Assert.
             const element = screen.getByRole('alert');
             expect(element.getAttribute('data-propA')).toEqual("true");
+            // Clean-up.
+            await lc.unmount(sspaProps);
         });
     });
 });

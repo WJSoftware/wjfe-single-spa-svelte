@@ -55,11 +55,13 @@ resulting functions should be conformant to what you are used to with `single-sp
 
 ## The Options Parameter
 
+> Since **v0.4.0**
+
 As seen in the Quickstart, `singleSpaSvelte`'s third parameter is named "options".  It accepts 3 properties:
 
 + `preMount`:  Optional function that is run just before mounting the Svelte component.
 + `postUnmount`:  Optionsl function that is run immediately after unmounting the Svelte component.
-+ `svelteOptions`:  Optional set of options for Svelte's `mount` function.
++ `mountOptions`:  Optional set of options for Svelte's `mount` function.
 
 For details on the last one, refer to Svelte's documentation.  All properties are accepted, except for `target`.
 
@@ -82,25 +84,30 @@ parcels in Svelte v5 projects.  It works quite similarly to `<svelte:component>`
 markup and then via props, the component and its properties are set.
 
 ```html
-<SspaParcel sspa={{ config: parcelConfig, mountParcel: mountParcelFromSingleSpa }} {...restOfParcelProperties} />
+<SspaParcel sspa={{ config: parcelConfig }} {...restOfParcelProperties} />
 ```
+
+You can collect the parcel properties in an object and then spread them as in the example above, or you may 
+individually specify them in markup as it is normally done with other components.
 
 ### The sspa Property
 
-For a `single-spa` parcel to be successfully mounted, 2 things are needed:
+For a `single-spa` parcel to be successfully mounted using `SspaParcel`, the parcel configuration object or a function 
+that returns it must be provided.  The purpose of the `sspa` property is to allow passing this requirement.
 
-1. The parcel configuration object or a function that returns it.
-2. The `mountParcel` or `mountRootParcel` function.
+The `sspa` property is an object in order to avoid reserving property names that may collide with the property names of 
+the parcel component being mounted.  It only has one property:  `sspa.config`.  In the future and if required, any 
+new properties will be defined inside this `sspa` object property that serves as namespace.
 
-The former is just the parcel's lifecycles, while the latter is the `mountParcel` function that `single-spa` injects 
-into every micro-frontend as a property, or the library's `mountRootParcel` function that is directly imported from 
-`single-spa`.
+> [!IMPORTANT]
+> It is recommended to implement the factory pattern for the lifecycle functions when it comes to parcels.  See this 
+> [GitHub issue](https://github.com/single-spa/single-spa-svelte/issues/28) opened for the Svelte v4 version of this 
+> package for details on how to implement a factory function.
 
-> **IMPORTANT**:  It is recommended to implement the factory pattern for the lifecycle functions when it comes to 
-> parcels.  See this [GitHub issue](https://github.com/single-spa/single-spa-svelte/issues/28) opened for the Svelte 
-> v4 version of this package for details on how to implement a factory function.
+## The single-spa Context
 
-In the future, an automatic or semi-automatic mechanism to get a hold of `mountParcel` could be implemented in order 
-to simplify the component's use.  There is an [open discussion](https://github.com/WJSoftware/wjfe-single-spa-svelte/discussions/1) 
-where anyone can participate with ideas or anything else.  **Remember**:  Participation is what makes open source 
-software great.
+> Since **v0.5.0**
+
+The entire `single-spa` library instance and the `mountParcel` function are available via context.  If needed, import  
+`getSingleSpaContext` and call it to obtain the context.  Remember to use this function in the initialization code of a 
+component.

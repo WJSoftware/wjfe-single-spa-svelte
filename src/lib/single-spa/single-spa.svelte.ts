@@ -1,3 +1,4 @@
+import { singleSpaContextKey } from "$lib/singleSpaContext.js";
 import { mount, unmount, type Component } from "svelte";
 import type { DomElementGetterFunction, InheritedSingleSpaProps, LifecycleOptions, SingleSpaProps, SspaLifeCycles } from "../wjfe-single-spa-svelte.js";
 
@@ -32,17 +33,17 @@ function singleSpaSvelteFactory(
         if (!component) {
             throw new Error('No component was passed to the function.');
         }
-        if ((options?.svelteOptions as any)?.target) {
-            throw new Error("Providing the 'target' option via 'svelteOptions' is disallowed.");
+        if ((options?.mountOptions as any)?.target) {
+            throw new Error("Providing the 'target' option via 'mountOptions' is disallowed.");
         }
         const thisValue = new SvelteLifeCycle<TProps>();
 
         async function mountComponent(this: SvelteLifeCycle<TProps>, props: SingleSpaProps) {
             if (this.instance) {
-                return Promise.reject(new Error('Cannot mount:  The component is currently mounted.'));
+                throw new Error('Cannot mount:  The component is currently mounted.');
             }
             const mergedProps = {
-                ...options?.svelteOptions?.props,
+                ...options?.mountOptions?.props,
                 ...props
             };
             delete mergedProps.domElement;
@@ -54,12 +55,23 @@ function singleSpaSvelteFactory(
             }
             this.target = chooseDomElementGetter(props, domElementGetter)();
             await options?.preMount?.(this.target);
-            this.instance = mountFn(component, { ...options?.svelteOptions, target: this.target, props: this.props });
+            // Don't lose any potential incoming context.
+            let context = options?.mountOptions?.context ?? new Map();
+            context.set(singleSpaContextKey, {
+                library: props.singleSpa,
+                mountParcel: props.mountParcel ?? props.singleSpa.mountRootParcel
+            });
+            this.instance = mountFn(component, {
+                ...options?.mountOptions,
+                context,
+                target: this.target,
+                props: this.props
+            });
         }
 
         async function unmountComponent(this: SvelteLifeCycle, props: SingleSpaProps) {
             if (!this.instance) {
-                return Promise.reject(new Error('Cannot unmount:  There is no component to unmount.'));
+                throw new Error('Cannot unmount:  There is no component to unmount.');
             }
             unmountFn(this.instance);
             await options?.postUnmount?.(this.target!);
