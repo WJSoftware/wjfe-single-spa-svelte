@@ -1,9 +1,9 @@
 import { singleSpaContextKey } from '$lib/singleSpaContext.js';
+import SspaParcel from '$lib/SspaParcel/SspaParcel.svelte';
 import { delay } from '$lib/utils.js';
 import { render } from '@testing-library/svelte';
 import { mountRootParcel } from 'single-spa';
 import { describe, expect, test, vi } from 'vitest';
-import { SspaParcel } from '../index.js';
 import type { SingleSpaProps } from '../wjfe-single-spa-svelte.js';
 
 describe('SspaParcel', () => {
