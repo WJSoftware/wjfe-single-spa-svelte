@@ -1,7 +1,7 @@
-// Reexport your entry components here
+export * from './single-spa/single-spa.svelte.js';
+export { getSingleSpaContext } from './singleSpaContext.js';
 export * from './SspaParcel/SspaParcel.svelte';
 export { default as SspaParcel } from './SspaParcel/SspaParcel.svelte';
-export * from './single-spa/single-spa.svelte.js';
 import singleSpaSvelteFactory from './single-spa/single-spa.svelte.js';
 
 /**
