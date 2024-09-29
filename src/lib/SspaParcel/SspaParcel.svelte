@@ -13,10 +13,6 @@
          */
         sspa: {
             /**
-             * The `mountParcel` function to use to mount the parcel.
-             */
-            mountParcel?: MountParcelFn;
-            /**
              * Parcel configuration object, or a function that returns a promise with the configuration object.
              */
             config: Parameters<MountParcelFn>[0];
@@ -32,8 +28,11 @@
     let firstRun = true;
 
     onMount(() => {
-        // The needed mountParcel() function may come from props or could be in context.
-        const mountParcelFn = sspa.mountParcel ?? getSingleSpaContext()?.mountParcel;
+        // The needed mountParcel() function from context.
+        const mountParcelFn = getSingleSpaContext()?.mountParcel;
+        if (typeof mountParcelFn !== 'function') {
+            throw new Error('Unexpected:  The single-spa context did not carry the "mountParcel" function.');
+        }
         parcel = mountParcelFn(sspa.config, {
             domElement: containerEl,
             ...restProps,
@@ -82,17 +81,8 @@ information.
 
 ## The `sspa` Prop
 
-This must be an object with one required and one optional properties:  The `mountParcel` function to use when mounting 
-the parcel, and the parcel configuration object (the object with the lifecycle functions).  The latter can also be a 
-function that returns a promise with said configuration object.  The former is the optional property; the latter is the 
-required one.
-
-### About `mountParcel`
-
-As you probably know, `mountParcel` is the function used to mount parcels.  This function is "calculated" specially 
-for every mounted micro-frontend.  This NPM package (`@wjfe/single-spa-svelte`) stores this function in context so 
-`SspaParcel` instances can automatically retrieve it.  This mechanism allows `sspa.mountParcel` to be optional (and 
-largely unnecessary).
+This must be an object with one required property:  The parcel configuration object (the object with the lifecycle 
+functions).  This can also be a function that returns a promise with said configuration object.
 
 ## Examples
 
@@ -111,12 +101,6 @@ function loadParcel() {
 
 ```html
 <SspaParcel sspa={{ config: loadParcel }} />
-```
-
-Or with an explicit  `mountParcel` function (which should be unnecessary even for root projects).
-
-```html
-<SspaParcel sspa={{ mountParcel, config: loadParcel }} />
 ```
 
 ### Mounting a parcel with extra properties that are native to the parcel being mounted

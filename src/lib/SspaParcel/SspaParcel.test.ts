@@ -7,7 +7,24 @@ import { describe, expect, test, vi } from 'vitest';
 import type { SingleSpaProps } from '../wjfe-single-spa-svelte.js';
 
 describe('SspaParcel', () => {
-    test('Should throw an error if mountParcel is not provided.', () => {
+    test("Should obtain the mountParcel function from context.", () => {
+        // Arrange.
+        const config = {
+            bootstrap: vi.fn(),
+            mount: vi.fn(),
+            unmount: vi.fn(),
+            update: vi.fn()
+        };
+        const mountParcel = vi.fn();
+
+        // Act.
+        // @ts-expect-error
+        render(SspaParcel, { context: new Map([[singleSpaContextKey, { mountParcel }]]), props: { sspa: { config } } });
+
+        // Assert.
+        expect(mountParcel).toHaveBeenCalledOnce();
+    });
+    test('Should throw an error if mountParcel is not found in context.', () => {
         // Arrange.
         const config = {
             bootstrap: vi.fn(),
@@ -31,23 +48,6 @@ describe('SspaParcel', () => {
         // Assert.
         expect(act).toThrow();
     });
-    test("Should call the given mountParcel() function upon rendering.", () => {
-        // Arrange.
-        const config = {
-            bootstrap: vi.fn(),
-            mount: vi.fn(),
-            unmount: vi.fn(),
-            update: vi.fn()
-        };
-        const mountParcel = vi.fn();
-
-        // Act.
-        // @ts-expect-error
-        render(SspaParcel, { sspa: { config, mountParcel } });
-
-        // Assert.
-        expect(mountParcel).toHaveBeenCalledOnce();
-    });
     test("Should include the domElement property when calling the config's mount() function.", async () => {
         // Arrange.
         let sspaProps = {} as SingleSpaProps;
@@ -65,7 +65,10 @@ describe('SspaParcel', () => {
 
         // Act.
         // @ts-expect-error
-        render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel } });
+        render(SspaParcel, {
+            context: new Map([[singleSpaContextKey, { mountParcel: mountRootParcel }]]),
+            props: { sspa: { config } }
+        });
         await delay(0);
 
         // Assert.
@@ -92,7 +95,10 @@ describe('SspaParcel', () => {
 
         // Act.
         // @ts-expect-error
-        render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel }, ...props });
+        render(SspaParcel, {
+            context: new Map([[singleSpaContextKey, { mountParcel: mountRootParcel }]]),
+            props: { sspa: { config }, ...props }
+        });
         await delay(0);
 
         // Assert.
@@ -129,10 +135,13 @@ describe('SspaParcel', () => {
             b: false
         };
         // @ts-expect-error
-        const component = render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel }, ...props });
+        const component = render(SspaParcel, {
+            context: new Map([[singleSpaContextKey, { mountParcel: mountRootParcel }]]),
+            props: { sspa: { config }, ...props }
+        });
 
         // Act.
-        await component.rerender({ sspa: { config, mountParcel: mountRootParcel }, ...newProps });
+        await component.rerender({ ...newProps });
         await delay(0);
 
         // Assert.
@@ -140,22 +149,5 @@ describe('SspaParcel', () => {
             // @ts-expect-error
             expect(updatedProps?.[k]).toEqual(v);
         }
-    });
-    test("Should obtain the mountParcel function from context.", () => {
-        // Arrange.
-        const config = {
-            bootstrap: vi.fn(),
-            mount: vi.fn(),
-            unmount: vi.fn(),
-            update: vi.fn()
-        };
-        const mountParcel = vi.fn();
-
-        // Act.
-        // @ts-expect-error
-        render(SspaParcel, { context: new Map([[singleSpaContextKey, { mountParcel }]]), props: { sspa: { config } } });
-
-        // Assert.
-        expect(mountParcel).toHaveBeenCalledOnce();
     });
 });

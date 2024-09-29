@@ -84,30 +84,30 @@ parcels in Svelte v5 projects.  It works quite similarly to `<svelte:component>`
 markup and then via props, the component and its properties are set.
 
 ```html
-<SspaParcel sspa={{ config: parcelConfig, mountParcel: mountParcelFromSingleSpa }} {...restOfParcelProperties} />
+<SspaParcel sspa={{ config: parcelConfig }} {...restOfParcelProperties} />
 ```
+
+You can collect the parcel properties in an object and then spread them as in the example above, or you may 
+individually specify them in markup as it is normally done with other components.
 
 ### The sspa Property
 
-For a `single-spa` parcel to be successfully mounted, 2 things are needed:
+For a `single-spa` parcel to be successfully mounted using `SspaParcel`, the parcel configuration object or a function 
+that returns it must be provided.  The purpose of the `sspa` property is to allow passing this requirement.
 
-1. The parcel configuration object or a function that returns it.
-2. The `mountParcel` or `mountRootParcel` function.
+The `sspa` property is an object in order to avoid reserving property names that may collide with the property names of 
+the parcel component being mounted.  It only has one property:  `sspa.config`.  In the future and if required, any 
+new properties will be defined inside this `sspa` object property that serves as namespace.
 
 > [!IMPORTANT]
 > It is recommended to implement the factory pattern for the lifecycle functions when it comes to parcels.  See this 
 > [GitHub issue](https://github.com/single-spa/single-spa-svelte/issues/28) opened for the Svelte v4 version of this 
 > package for details on how to implement a factory function.
 
-> Since **v0.5.0**
-
-Out of the two requirements, only the first one (parcel configuration object or a function that returns it) needs to be 
-provided in code because `mountParcel` is automatically provided by this package.
-
 ## The single-spa Context
 
 > Since **v0.5.0**
 
-The entire `single-spa` library instance and the `mountParcel` functions are available via context.  import 
-`getSingleSpaContext` and use it to obtain the context.  Remember to use this function in the initialization code of a 
+The entire `single-spa` library instance and the `mountParcel` function are available via context.  If needed, import  
+`getSingleSpaContext` and call it to obtain the context.  Remember to use this function in the initialization code of a 
 component.
