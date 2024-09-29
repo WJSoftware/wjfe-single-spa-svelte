@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/svelte';
 import { type ComponentProps } from 'svelte';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { SvelteOptions } from '../wjfe-single-spa-svelte.js';
+import type { MountOptions } from '../wjfe-single-spa-svelte.js';
 import singleSpaSvelteFactory from './single-spa.svelte.js';
 import TestComponent from './TestComponent.test.svelte';
 
@@ -33,14 +33,14 @@ describe('singleSpaSvelte', () => {
         expect(lc.unmount).toBeTypeOf('function');
         expect(lc.update).toBeTypeOf('function');
     });
-    test('Should throw an error if options.svelteOptions define the "target" property.', () => {
+    test('Should throw an error if options.mountOptions define the "target" property.', () => {
         // Arrange.
         let didThrow = false;
 
         // Act.
         try {
-            //@ts-expect-error The target property is disallowed in svelteOptions.
-            singleSpaSvelte(TestComponent, undefined, { svelteOptions: { target: {} } });
+            //@ts-expect-error The target property is disallowed in mountOptions.
+            singleSpaSvelte(TestComponent, undefined, { mountOptions: { target: {} } });
         }
         catch {
             didThrow = true;
@@ -98,12 +98,12 @@ describe('singleSpaSvelte', () => {
         });
         test("Should call Svelte's mount().", async () => {
             // Arrange.
-            const mountProps: SvelteOptions<ComponentProps<typeof TestComponent>> = {
+            const mountProps: MountOptions<ComponentProps<typeof TestComponent>> = {
                 props: {
                     propA: true
                 }
             };
-            const lc = singleSpaSvelte(TestComponent, undefined, { svelteOptions: mountProps });
+            const lc = singleSpaSvelte(TestComponent, undefined, { mountOptions: mountProps });
 
             // Act.
             await lc.mount({
@@ -217,7 +217,7 @@ describe('singleSpaSvelte', () => {
             const context = new Map([
                 ["extra", extraContext]
             ]);
-            const lc = singleSpaSvelteFactory()(TestComponent, undefined, { svelteOptions: { context }});
+            const lc = singleSpaSvelteFactory()(TestComponent, undefined, { mountOptions: { context }});
 
             // Act.
             await lc.mount(sspaProps);

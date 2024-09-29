@@ -61,7 +61,7 @@ As seen in the Quickstart, `singleSpaSvelte`'s third parameter is named "options
 
 + `preMount`:  Optional function that is run just before mounting the Svelte component.
 + `postUnmount`:  Optionsl function that is run immediately after unmounting the Svelte component.
-+ `svelteOptions`:  Optional set of options for Svelte's `mount` function.
++ `mountOptions`:  Optional set of options for Svelte's `mount` function.
 
 For details on the last one, refer to Svelte's documentation.  All properties are accepted, except for `target`.
 
