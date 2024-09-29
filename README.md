@@ -99,11 +99,15 @@ For a `single-spa` parcel to be successfully mounted, 2 things are needed:
 > [GitHub issue](https://github.com/single-spa/single-spa-svelte/issues/28) opened for the Svelte v4 version of this 
 > package for details on how to implement a factory function.
 
-The former is just the parcel's lifecycles, while the latter is the `mountParcel` function that `single-spa` injects 
-into every micro-frontend as a property, or the library's `mountRootParcel` function that is directly imported from 
-`single-spa`.
+> Since **v0.5.0**
+
+Out of the two requirements, only the first one (parcel configuration object or a function that returns it) needs to be 
+provided in code because `mountParcel` is automatically provided by this package.
+
+## The single-spa Context
 
 > Since **v0.5.0**
 
-The `sspa.mountParcel` property is, under normal circumstances, unneeded because this package makes it available 
-through context.  You should only ever care about the `sspa.config` property.
+The entire `single-spa` library instance and the `mountParcel` functions are available via context.  import 
+`getSingleSpaContext` and use it to obtain the context.  Remember to use this function in the initialization code of a 
+component.
