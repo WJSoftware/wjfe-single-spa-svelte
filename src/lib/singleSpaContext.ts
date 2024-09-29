@@ -2,9 +2,9 @@ import { getContext } from "svelte";
 import type { SingleSpaContext } from "./wjfe-single-spa-svelte.js";
 
 /**
- * Defines the context key used to store single-spa's `mountParcel()` function.
+ * Defines the context key used to store single-spa's `mountParcel()` function and the library instance.
  */
-export const singleSpaContextKey = Symbol("mountParcel");
+export const singleSpaContextKey = Symbol("singleSpaSvelte");
 
 /**
  * Obtains the `single-spa` context, which is an object that contains the `single-spa` library instance and the 
