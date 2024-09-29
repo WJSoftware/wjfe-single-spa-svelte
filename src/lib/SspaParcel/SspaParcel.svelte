@@ -107,16 +107,22 @@ function loadParcel() {
 }
 ```
 
-Mounting a parcel with no custom (or parcel-native) properties:
+### Mounting a parcel with no custom (or parcel-native) properties
+
+```html
+<SspaParcel sspa={{ config: loadParcel }} />
+```
+
+Or with an explicit  `mountParcel` function (which should be unnecessary even for root projects).
 
 ```html
 <SspaParcel sspa={{ mountParcel, config: loadParcel }} />
 ```
 
-Mounting a parcel with extra properties that are native to the parcel being mounted:
+### Mounting a parcel with extra properties that are native to the parcel being mounted
 
 ```html
-<SspaParcel sspa={{ mountParcel, config: loadParcel }} showSomething={true} onclick={() => console.log('clicked!')} />
+<SspaParcel sspa={{ config: loadParcel }} showSomething={true} onclick={() => console.log('clicked!')} />
 ```
 
 As seen in the above examples, event handlers can be passed as well thanks to Svelte v5's new design.  Yes, snippets 
