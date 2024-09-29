@@ -17,6 +17,7 @@ describe('SspaParcel', () => {
         };
 
         // Act.
+        // @ts-expect-error
         const act = () => render(SspaParcel, { sspa: { config } });
 
         // Assert.
@@ -41,6 +42,7 @@ describe('SspaParcel', () => {
         const mountParcel = vi.fn();
 
         // Act.
+        // @ts-expect-error
         render(SspaParcel, { sspa: { config, mountParcel } });
 
         // Assert.
@@ -62,6 +64,7 @@ describe('SspaParcel', () => {
         config.unmount.mockReturnValue(Promise.resolve());
 
         // Act.
+        // @ts-expect-error
         render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel } });
         await delay(0);
 
@@ -88,6 +91,7 @@ describe('SspaParcel', () => {
         };
 
         // Act.
+        // @ts-expect-error
         render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel }, ...props });
         await delay(0);
 
@@ -124,6 +128,7 @@ describe('SspaParcel', () => {
             a: 2,
             b: false
         };
+        // @ts-expect-error
         const component = render(SspaParcel, { sspa: { config, mountParcel: mountRootParcel }, ...props });
 
         // Act.
@@ -147,6 +152,7 @@ describe('SspaParcel', () => {
         const mountParcel = vi.fn();
 
         // Act.
+        // @ts-expect-error
         render(SspaParcel, { context: new Map([[singleSpaContextKey, { mountParcel }]]), props: { sspa: { config } } });
 
         // Assert.

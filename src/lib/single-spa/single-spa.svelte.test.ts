@@ -98,7 +98,7 @@ describe('singleSpaSvelte', () => {
         });
         test("Should call Svelte's mount().", async () => {
             // Arrange.
-            const mountProps: SvelteOptions<ComponentProps<TestComponent>> = {
+            const mountProps: SvelteOptions<ComponentProps<typeof TestComponent>> = {
                 props: {
                     propA: true
                 }
