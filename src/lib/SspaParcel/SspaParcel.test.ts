@@ -18,7 +18,6 @@ describe('SspaParcel', () => {
         const mountParcel = vi.fn();
 
         // Act.
-        // @ts-expect-error
         render(SspaParcel, { context: new Map([[singleSpaContextKey, { mountParcel }]]), props: { sspa: { config } } });
 
         // Assert.
@@ -34,7 +33,6 @@ describe('SspaParcel', () => {
         };
 
         // Act.
-        // @ts-expect-error
         const act = () => render(SspaParcel, { sspa: { config } });
 
         // Assert.
@@ -42,7 +40,6 @@ describe('SspaParcel', () => {
     });
     test('Should throw an error if config is not provided.', () => {
         // Act.
-        // @ts-expect-error
         const act = () => render(SspaParcel, { sspa: { mountParcel: vi.fn() } });
 
         // Assert.
@@ -64,7 +61,6 @@ describe('SspaParcel', () => {
         config.unmount.mockReturnValue(Promise.resolve());
 
         // Act.
-        // @ts-expect-error
         render(SspaParcel, {
             context: new Map([[singleSpaContextKey, { mountParcel: mountRootParcel }]]),
             props: { sspa: { config } }
@@ -94,7 +90,6 @@ describe('SspaParcel', () => {
         };
 
         // Act.
-        // @ts-expect-error
         render(SspaParcel, {
             context: new Map([[singleSpaContextKey, { mountParcel: mountRootParcel }]]),
             props: { sspa: { config }, ...props }
@@ -134,7 +129,6 @@ describe('SspaParcel', () => {
             a: 2,
             b: false
         };
-        // @ts-expect-error
         const component = render(SspaParcel, {
             context: new Map([[singleSpaContextKey, { mountParcel: mountRootParcel }]]),
             props: { sspa: { config }, ...props }
