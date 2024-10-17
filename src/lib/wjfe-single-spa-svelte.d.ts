@@ -21,15 +21,15 @@ export type SspaLifeCycles<TProps extends Record<string, any> = Record<string, a
     /**
      * Bootstrapping function that is called once by `single-spa`.
      */
-    bootstrap: LifecycleFunction;
+    bootstrap: LifecycleFunction | LifecycleFunction[];
     /**
      * Mounts the micro-frontend or parcel.
      */
-    mount: LifecycleFunction;
+    mount: LifecycleFunction | LifecycleFunction[];
     /**
      * Unmounts the micro-frontend or parcel.
      */
-    unmount: LifecycleFunction;
+    unmount: LifecycleFunction | LifecycleFunction[];
     /**
      * Updates the properties passed to the parcel.
      * @param props Updated set of properties for the parcel.
@@ -37,6 +37,16 @@ export type SspaLifeCycles<TProps extends Record<string, any> = Record<string, a
      */
     update: (props: TProps) => Promise<void>;
 };
+
+/**
+ * Defines the shape of configuration objects, which are the objects used to mount parcels.
+ */
+export type SspaParcelConfigObject<TProps extends Record<string, any> = Record<string, any>> = {
+    /**
+     * Parcel's assigned name.
+     */
+    name?: string;
+} & SspaLifeCycles<TProps>;
 
 /**
  * Defines the single-spa parcel object.
@@ -96,7 +106,7 @@ type Parcel<TProps extends Record<string, any> = Record<string, any>> = {
 * @returns The `single-spa` parcel object.
 */
 export type MountParcelFn<TProps extends Record<string, any> = Record<string, any>> = (
-    config: SspaLifeCycles | (() => Promise<SspaLifeCycles>),
+    config: SspaParcelConfigObject<TProps> | (() => Promise<SspaParcelConfigObject<TProps>>),
     props: TProps & { domElement: HTMLElement },
 ) => Parcel<TProps>;
 
