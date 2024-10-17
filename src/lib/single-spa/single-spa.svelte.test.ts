@@ -33,24 +33,37 @@ describe('singleSpaSvelte', () => {
         expect(lc.unmount).toBeTypeOf('function');
         expect(lc.update).toBeTypeOf('function');
     });
-    test('Should throw an error if options.mountOptions define the "target" property.', () => {
+    test("Should emit a console warning if the 'target' mount option is specified.", () => {
         // Arrange.
-        let didThrow = false;
-
+        const origWarn = console.warn;
+        console.warn = vi.fn();
         // Act.
-        try {
-            //@ts-expect-error The target property is disallowed in mountOptions.
-            singleSpaSvelte(TestComponent, undefined, { mountOptions: { target: {} } });
-        }
-        catch {
-            didThrow = true;
-        }
+        //@ts-expect-error The target property is disallowed in mountOptions.
+        const lc = singleSpaSvelte(TestComponent, undefined, { mountOptions: { target: {} } });
 
         // Assert.
-        expect(didThrow).toEqual(true);
+        expect(console.warn).toHaveBeenCalledOnce();
+        console.warn = origWarn;
     });
 
     describe('mount', () => {
+        test("Should ignore any 'target' specification that may have been passed via singleSpaSvelte().", async () => {
+            // Arrange.
+            const target = document.createElement('div');
+            //@ts-expect-error The target property is disallowed in mountOptions.
+            const lc = singleSpaSvelte(TestComponent, undefined, { mountOptions: { target } });
+
+            // Act.
+            await lc.mount({
+                mountParcel: vi.fn(),
+                name: 'mifeA',
+                singleSpa: {},
+            });
+
+            // Assert.
+            console.log(mountMock.mock.lastCall);
+            expect(mountMock.mock.lastCall?.[1]?.target).not.toBe(target);
+        });
         test('Should return a promise that successfully resolves upon mounting the component.', async () => {
             // Arrange.
             const lc = singleSpaSvelte(TestComponent);
@@ -217,7 +230,7 @@ describe('singleSpaSvelte', () => {
             const context = new Map([
                 ["extra", extraContext]
             ]);
-            const lc = singleSpaSvelteFactory()(TestComponent, undefined, { mountOptions: { context }});
+            const lc = singleSpaSvelteFactory()(TestComponent, undefined, { mountOptions: { context } });
 
             // Act.
             await lc.mount(sspaProps);

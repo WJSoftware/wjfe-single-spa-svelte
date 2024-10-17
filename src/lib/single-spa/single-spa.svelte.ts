@@ -29,12 +29,12 @@ function singleSpaSvelteFactory(
         component: Component<TProps>,
         domElementGetter?: DomElementGetterFunction,
         options?: LifecycleOptions<TProps>
-    ): SspaLifeCycles<TProps> {
+    ) {
         if (!component) {
             throw new Error('No component was passed to the function.');
         }
         if ((options?.mountOptions as any)?.target) {
-            throw new Error("Providing the 'target' option via 'mountOptions' is disallowed.");
+            console.warn("Specifying the 'target' mount option has no effect.");
         }
         const thisValue = new SvelteLifeCycle<TProps>();
 
@@ -94,7 +94,7 @@ function singleSpaSvelteFactory(
             mount: mountComponent.bind(thisValue),
             unmount: unmountComponent.bind(thisValue),
             update: updateComponent.bind(thisValue)
-        };
+        } satisfies SspaLifeCycles<TProps>;
     }
 }
 

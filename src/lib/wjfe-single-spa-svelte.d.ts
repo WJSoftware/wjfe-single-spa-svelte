@@ -21,22 +21,38 @@ export type SspaLifeCycles<TProps extends Record<string, any> = Record<string, a
     /**
      * Bootstrapping function that is called once by `single-spa`.
      */
-    bootstrap: LifecycleFunction;
+    bootstrap: LifecycleFunction | LifecycleFunction[];
     /**
      * Mounts the micro-frontend or parcel.
      */
-    mount: LifecycleFunction;
+    mount: LifecycleFunction | LifecycleFunction[];
     /**
      * Unmounts the micro-frontend or parcel.
      */
-    unmount: LifecycleFunction;
+    unmount: LifecycleFunction | LifecycleFunction[];
     /**
      * Updates the properties passed to the parcel.
      * @param props Updated set of properties for the parcel.
      * @returns A promise that resolves once the update has completed.
      */
-    update: (props: TProps) => Promise<void>;
+    update?: (props: TProps) => Promise<void>;
 };
+
+/**
+ * Defines the shape of configuration objects, which are the objects used to mount parcels.
+ */
+export type SspaParcelConfigObject<TProps extends Record<string, any> = Record<string, any>> = {
+    /**
+     * Parcel's assigned name.
+     */
+    name?: string;
+} & SspaLifeCycles<TProps>;
+
+/**
+ * Defines the shape of the `mount` lifecycle function's `config` parameter.
+ */
+export type SspaParcelConfig<TProps extends Record<string, any> = Record<string, any>> =
+    SspaParcelConfigObject<TProps> | (() => Promise<SspaParcelConfigObject<TProps>>);
 
 /**
  * Defines the single-spa parcel object.
@@ -96,7 +112,7 @@ type Parcel<TProps extends Record<string, any> = Record<string, any>> = {
 * @returns The `single-spa` parcel object.
 */
 export type MountParcelFn<TProps extends Record<string, any> = Record<string, any>> = (
-    config: SspaLifeCycles | (() => Promise<SspaLifeCycles>),
+    config: SspaParcelConfig<TProps>,
     props: TProps & { domElement: HTMLElement },
 ) => Parcel<TProps>;
 
@@ -135,6 +151,8 @@ export type SingleSpaProps = InheritedSingleSpaProps & Record<string, any> & {
      * **NOTE**:  Techincally speaking, micro-frontends could be mounted using this, but it goes against the 
      * `single-spa` guidelines and this information is undocumented API and therefore subject to change without prior 
      * notice.
+     * 
+     * The primary (and probably **only**) purpose of this is to mount parcels.
      */
     domElement?: HTMLElement;
     /**
