@@ -29,7 +29,7 @@ function singleSpaSvelteFactory(
         component: Component<TProps>,
         domElementGetter?: DomElementGetterFunction,
         options?: LifecycleOptions<TProps>
-    ): SspaLifeCycles<TProps> {
+    ): Required<SspaLifeCycles<TProps>> {
         if (!component) {
             throw new Error('No component was passed to the function.');
         }
