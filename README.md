@@ -111,3 +111,22 @@ new properties will be defined inside this `sspa` object property that serves as
 The entire `single-spa` library instance and the `mountParcel` function are available via context.  If needed, import  
 `getSingleSpaContext` and call it to obtain the context.  Remember to use this function in the initialization code of a 
 component.
+
+### Setting the single-spa Context
+
+> Since **v0.7.0**
+
+It is also possible to set the needed context for the `SspaParcel` component from root Svelte projects.  Before this 
+was possible, the `SspaParcel` component would not work on root projects because it was unable to get a hold of the 
+needed `mountParcel` function.
+
+> [!NOTE]
+> This is only needed on root projects that wish to mount parcels with the `SspaParcel` component.  Micro-frontends get 
+> this done automatically.
+
+```typescript
+import * as singleSpaLib from "single-spa";
+import { setSingleSpaContext } from "@wjfe/single-spa-svelte";
+
+setSingleSpaContext({ library: singleSpaLib });
+```

@@ -1,5 +1,5 @@
 export * from './single-spa/single-spa.svelte.js';
-export { getSingleSpaContext } from './singleSpaContext.js';
+export { getSingleSpaContext, setSingleSpaContext } from './singleSpaContext.js';
 export * from './SspaParcel/SspaParcel.svelte';
 export { default as SspaParcel } from './SspaParcel/SspaParcel.svelte';
 import singleSpaSvelteFactory from './single-spa/single-spa.svelte.js';

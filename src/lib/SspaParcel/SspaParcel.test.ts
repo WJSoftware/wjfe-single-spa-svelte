@@ -40,7 +40,8 @@ describe('SspaParcel', () => {
     });
     test('Should throw an error if config is not provided.', () => {
         // Act.
-        const act = () => render(SspaParcel, { sspa: { mountParcel: vi.fn() } });
+        // @ts-expect-error ts2741 The purpose of the test is to test for the missing prop.
+        const act = () => render(SspaParcel, { sspa: { } });
 
         // Assert.
         expect(act).toThrow();

@@ -5,6 +5,7 @@ describe('index', () => {
         // Arrange.
         const expectedList = [
             'getSingleSpaContext',
+            'setSingleSpaContext',
             'SspaParcel',
             'singleSpaSvelte'
         ];

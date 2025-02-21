@@ -210,5 +210,5 @@ export type SingleSpaContext = {
     /**
      * The parcel-mounting function assigned to the micro-frontend.
      */
-    mountParcel: MountParcelFn;
+    mountParcel?: MountParcelFn;
 };
