@@ -109,6 +109,28 @@ function loadParcel() {
 <SspaParcel sspa={{ config: loadParcel }} showSomething={true} onclick={() => console.log('clicked!')} />
 ```
 
-As seen in the above examples, event handlers can be passed as well thanks to Svelte v5's new design.  Yes, snippets 
-can also be passed along as props.
+As seen in the above examples, event handlers can be passed as well thanks to Svelte v5's new design.
+
+### Typing `loadParcel` to obtain Intellisense on props
+
+For the previous example with properties, you can attain Intellisense on the properties by typing the `loadParcel` 
+function.  This is done by defining the `ParcelProps` type and using it as the generic type for the `SspaParcelConfigObject` 
+type.
+
+```typescript
+import type { SspaParcelConfigObject } from '@wjfe/single-spa-svelte';
+
+type ParcelProps = {
+    showSomething: boolean;
+    onclick: () => void;
+};
+
+function loadParcel(): Promise<SspaParcelConfigObject<ParcelProps>> {
+    const parcelModule = await import('https://my.parcel.example.com/parcel.js');
+    // This assumes exporting a function that creates the lifecycle object.  See the above note.
+    return await parcelModule.createParcel();
+}
+```
+
+Doing this will allow you to have Intellisense on the `SspaParcel` component as you type its properties.
 -->
