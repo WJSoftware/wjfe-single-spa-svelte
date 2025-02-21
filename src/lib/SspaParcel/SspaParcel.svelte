@@ -1,12 +1,12 @@
-<script lang="ts">
+<script lang="ts" generics="TProps extends Record<string, any> = Record<string, any>">
     import { getSingleSpaContext } from "$lib/singleSpaContext.js";
-    import type { MountParcelFn, Parcel } from "$lib/wjfe-single-spa-svelte.js";
+    import type { MountParcelFn, Parcel, SspaParcelConfig } from "$lib/wjfe-single-spa-svelte.js";
     import { onMount } from "svelte";
 
     let {
         sspa,
         ...restProps
-    }: Record<string, any> & {
+    }: TProps & {
         /**
          * Required property object.  Allows the specification on the parcel to mount and the function to use to mount 
          * it.
@@ -15,7 +15,7 @@
             /**
              * Parcel configuration object, or a function that returns a promise with the configuration object.
              */
-            config: Parameters<MountParcelFn>[0];
+            config: SspaParcelConfig<TProps>;
         };
     } = $props();
 
@@ -33,7 +33,7 @@
         if (typeof mountParcelFn !== 'function') {
             throw new Error('Unexpected:  The single-spa context did not carry the "mountParcel" function.');
         }
-        parcel = mountParcelFn(sspa.config, {
+        parcel = mountParcelFn(sspa.config as SspaParcelConfig, {
             domElement: containerEl,
             ...restProps,
         });
