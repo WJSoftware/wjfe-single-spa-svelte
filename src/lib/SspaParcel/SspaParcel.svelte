@@ -29,7 +29,8 @@
 
     onMount(() => {
         // The needed mountParcel() function from context.
-        const mountParcelFn = getSingleSpaContext()?.mountParcel;
+        const ctx = getSingleSpaContext();
+        const mountParcelFn = ctx?.mountParcel ?? ctx?.library.mountRootParcel;
         if (typeof mountParcelFn !== 'function') {
             throw new Error('Unexpected:  The single-spa context did not carry the "mountParcel" function.');
         }
