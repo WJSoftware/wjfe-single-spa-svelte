@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/svelte';
 import { type ComponentProps } from 'svelte';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { MountOptions } from '../wjfe-single-spa-svelte.js';
+import type { SvelteMountOptions } from '../wjfe-single-spa-svelte.js';
 import singleSpaSvelteFactory from './single-spa.svelte.js';
 import TestComponent from './TestComponent.test.svelte';
 
@@ -111,7 +111,7 @@ describe('singleSpaSvelte', () => {
         });
         test("Should call Svelte's mount().", async () => {
             // Arrange.
-            const mountProps: MountOptions<ComponentProps<typeof TestComponent>> = {
+            const mountProps: SvelteMountOptions<ComponentProps<typeof TestComponent>> = {
                 props: {
                     propA: true
                 }

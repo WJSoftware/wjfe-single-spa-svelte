@@ -1,5 +1,6 @@
 /// <reference types="svelte" />
-import { mount } from "svelte";
+
+import { type MountOptions } from "svelte";
 
 /**
  * Defines the function signature of all single-spa's lifecycle functions.
@@ -165,17 +166,15 @@ export type SingleSpaProps = InheritedSingleSpaProps & Record<string, any> & {
 /**
  * Options for Svelte's `mount()` function.
  */
-export type MountOptions<
-    TProps extends Record<string, any> = Record<string, any>,
-    TExports extends Record<string, any> = Record<string, any>
-> = Omit<Parameters<typeof mount<TProps, TExports>>['1'], 'target'>;
+export type SvelteMountOptions<
+    TProps extends Record<string, any> = Record<string, any>
+> = Omit<MountOptions<TProps>, 'target'>;
 
 /**
  * Options given to the lifecycle-creation function.
  */
 export type LifecycleOptions<
-    TProps extends Record<string, any> = Record<string, any>,
-    TExports extends Record<string, any> = Record<string, any>
+    TProps extends Record<string, any> = Record<string, any>
 > = {
     /**
      * Optional function to be run immediately before Svelte mounts the component.
@@ -195,7 +194,7 @@ export type LifecycleOptions<
      * Optional options for Svelte's `mount()` function.  Refer to Svelte's `mount()` function documentation for 
      * information about each option.
      */
-    mountOptions?: MountOptions<TProps, TExports>;
+    mountOptions?: SvelteMountOptions<TProps>;
 };
 
 /**
