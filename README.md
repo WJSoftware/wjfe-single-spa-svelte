@@ -92,17 +92,31 @@ individually specify them in markup as it is normally done with other components
 
 ### The sspa Property
 
-For a `single-spa` parcel to be successfully mounted using `SspaParcel`, the parcel configuration object or a function 
-that returns it must be provided.  The purpose of the `sspa` property is to allow passing this requirement.
+The `sspa` property is an object whose purpose is to avoid reserving property names that may collide with the property 
+names of the parcel component being mounted.  In the future and if required, any new properties will be defined inside 
+this `sspa` object property that serves as namespace.
 
-The `sspa` property is an object in order to avoid reserving property names that may collide with the property names of 
-the parcel component being mounted.  It only has one property:  `sspa.config`.  In the future and if required, any 
-new properties will be defined inside this `sspa` object property that serves as namespace.
+#### `sspa.config`
+
+For a `single-spa` parcel to be successfully mounted using `SspaParcel`, the parcel configuration object or a function 
+that returns it must be provided.  The purpose of the `sspa.config` property is to allow passing this requirement.
 
 > [!IMPORTANT]
 > It is recommended to implement the factory pattern for the lifecycle functions when it comes to parcels.  See this 
 > [GitHub issue](https://github.com/single-spa/single-spa-svelte/issues/28) opened for the Svelte v4 version of this 
 > package for details on how to implement a factory function.
+
+#### `sspa.containerProps`
+
+> Since **v0.8.0**
+
+The `SspaParcel` component renders the `single-spa` parcel inside a DIV whose `display` style is set to `contents` 
+using a CSS specificity of `(0, 1, 1)`.
+
+This DIV element can be put to work by spreading properties on it via `sspa.containerProps`.  For example, you can set 
+an `onfocusin` handler to be notified whenever the mounted parcel obtains the keyboard focus.
+
+You can also style it to your needs if you wish, but remember that you must opt out of `display: contents;` first.
 
 ## The single-spa Context
 

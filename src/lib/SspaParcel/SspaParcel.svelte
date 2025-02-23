@@ -1,7 +1,8 @@
 <script lang="ts" generics="TProps extends Record<string, any> = Record<string, any>">
     import { getSingleSpaContext } from "$lib/singleSpaContext.js";
-    import type { MountParcelFn, Parcel, SspaParcelConfig } from "$lib/wjfe-single-spa-svelte.js";
+    import type { Parcel, SspaParcelConfig } from "$lib/wjfe-single-spa-svelte.js";
     import { onMount } from "svelte";
+    import type { HTMLAttributes } from "svelte/elements";
 
     let {
         sspa,
@@ -16,6 +17,7 @@
              * Parcel configuration object, or a function that returns a promise with the configuration object.
              */
             config: SspaParcelConfig<TProps>;
+            containerProps?: HTMLAttributes<HTMLDivElement>;
         };
     } = $props();
 
@@ -30,7 +32,7 @@
     onMount(() => {
         // The needed mountParcel() function from context.
         const ctx = getSingleSpaContext();
-        const mountParcelFn = ctx?.mountParcel ?? ctx?.library.mountRootParcel;
+        const mountParcelFn = ctx?.mountParcel ?? ctx?.library?.mountRootParcel;
         if (typeof mountParcelFn !== 'function') {
             throw new Error('Unexpected:  The single-spa context did not carry the "mountParcel" function.');
         }
@@ -60,7 +62,7 @@
     });
 </script>
 
-<div bind:this={containerEl}></div>
+<div bind:this={containerEl} {...sspa.containerProps}></div>
 
 <style>
     div {
@@ -84,6 +86,10 @@ information.
 
 This must be an object with one required property:  The parcel configuration object (the object with the lifecycle 
 functions).  This can also be a function that returns a promise with said configuration object.
+
+The other property, `containerProps`, is an optional object that contains properties to apply to the container DIV.  This 
+is useful for adding event handlers to the container, or even opting out of the `display: contents;` styling it has by 
+default.  See the last example for more information.
 
 ## Examples
 
@@ -134,4 +140,19 @@ function loadParcel(): Promise<SspaParcelConfigObject<ParcelProps>> {
 ```
 
 Doing this will allow you to have Intellisense on the `SspaParcel` component as you type its properties.
+
+### Passing Properties to the Container DIV
+
+```html
+<SspaParcel sspa={{
+    config: loadParcel,
+    configProps: {
+        onfocusin: (e) => console.log('Parcel has the focus.', e)
+    }
+}} />
+```
+
+The container DIV has the `display: contents;` style applied to it with specificity (0, 1, 1).  If you would like to 
+change it, pass `configProps.class` with a class name that overrides this value (at least the same specificity).
+
 -->
