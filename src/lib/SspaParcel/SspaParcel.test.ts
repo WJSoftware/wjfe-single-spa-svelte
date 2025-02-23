@@ -23,6 +23,27 @@ describe('SspaParcel', () => {
         // Assert.
         expect(mountParcel).toHaveBeenCalledOnce();
     });
+    test("Should default to the mountRootParcel function from the library in context when mountParcel is not found.", () => {
+        // Arrange.
+        const config = {
+            bootstrap: vi.fn(),
+            mount: vi.fn(),
+            unmount: vi.fn(),
+            update: vi.fn()
+        };
+        const mountRootParcel = vi.fn();
+
+        // Act.
+        render(
+            SspaParcel,
+            {
+                context: new Map([[singleSpaContextKey, { library: { mountRootParcel } }]]),
+                props: { sspa: { config } }
+            });
+
+        // Assert.
+        expect(mountRootParcel).toHaveBeenCalledOnce();
+    });
     test('Should throw an error if mountParcel is not found in context.', () => {
         // Arrange.
         const config = {
@@ -41,7 +62,7 @@ describe('SspaParcel', () => {
     test('Should throw an error if config is not provided.', () => {
         // Act.
         // @ts-expect-error ts2741 The purpose of the test is to test for the missing prop.
-        const act = () => render(SspaParcel, { sspa: { } });
+        const act = () => render(SspaParcel, { sspa: {} });
 
         // Assert.
         expect(act).toThrow();
@@ -144,5 +165,31 @@ describe('SspaParcel', () => {
             // @ts-expect-error
             expect(updatedProps?.[k]).toEqual(v);
         }
+    });
+    test("Should spread any properties defined in sspa.containerProps on the container DIV element.", async () => {
+        // Arrange.
+        const config = {
+            bootstrap: vi.fn(() => Promise.resolve()),
+            mount: vi.fn(() => Promise.resolve()),
+            unmount: vi.fn(() => Promise.resolve()),
+            update: vi.fn(() => Promise.resolve())
+        };
+        const containerProps = {
+            class: 'abc',
+            'data-testid': 'def'
+        };
+
+        // Act.
+        const { findByTestId } = render(SspaParcel, {
+            context: new Map([[singleSpaContextKey, { mountParcel: mountRootParcel }]]),
+            props: {
+                sspa: { config, containerProps }
+            }
+        });
+
+        // Assert.
+        const container = await findByTestId(containerProps['data-testid']);
+        expect(container).toBeTruthy();
+        expect(container.classList.contains(containerProps.class)).toBeTruthy();
     });
 });
