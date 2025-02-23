@@ -5,11 +5,9 @@ import type { DomElementGetterFunction, InheritedSingleSpaProps, LifecycleOption
 /**
  * Class used to track single-spa instances.
  */
-class SvelteLifeCycle<
-    TProps extends Record<string, any> = Record<string, any>
-> {
+class SvelteLifeCycle<TProps extends Record<string, any> = Record<string, any>> {
     instance?: object;
-    props = $state<TProps & InheritedSingleSpaProps>({} as TProps & InheritedSingleSpaProps);
+    props = $state({} as TProps & InheritedSingleSpaProps);
     target?: HTMLElement;
 }
 
