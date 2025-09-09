@@ -17,6 +17,10 @@
              * Parcel configuration object, or a function that returns a promise with the configuration object.
              */
             config: SspaParcelConfig<TProps>;
+            /**
+             * Optional properties to apply to the container DIV.  This is useful for adding event handlers to the
+             * container, or maybe even styling it.
+             */
             containerProps?: HTMLAttributes<HTMLDivElement>;
         };
     } = $props();
@@ -85,11 +89,14 @@ information.
 ## The `sspa` Prop
 
 This must be an object with one required property:  The parcel configuration object (the object with the lifecycle 
-functions).  This can also be a function that returns a promise with said configuration object.
+functions).  This can also be a function that returns a promise for said configuration object.
 
 The other property, `containerProps`, is an optional object that contains properties to apply to the container DIV.  This 
-is useful for adding event handlers to the container, or even opting out of the `display: contents;` styling it has by 
-default.  See the last example for more information.
+is useful for adding event handlers to the container, or even styling it.  See the last example for more information.
+
+> You could also opt to style the container DIV, but know this DIV has a class that applies the `display: contents;` 
+> style to it.  In order to style it, you must apply a different value for the `display` CSS property.  The property 
+> is applied with a specificity of (0, 1, 1), so your style must be at least that specific.
 
 ## Examples
 
