@@ -75,6 +75,7 @@ function singleSpaSvelteFactory(
             await options?.postUnmount?.(this.target!);
             this.instance = undefined;
             this.target = undefined;
+            this.props = {} as TProps & InheritedSingleSpaProps;
         }
 
         function updateComponent(this: SvelteLifeCycle, newProps: TProps) {

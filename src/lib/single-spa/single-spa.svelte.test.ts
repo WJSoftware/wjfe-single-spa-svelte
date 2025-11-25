@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/svelte';
 import { type ComponentProps } from 'svelte';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { SvelteMountOptions } from '../wjfe-single-spa-svelte.js';
+import type { SingleSpaProps, SvelteMountOptions } from '../wjfe-single-spa-svelte.js';
 import singleSpaSvelteFactory from './single-spa.svelte.js';
 import TestComponent from './TestComponent.test.svelte';
 
@@ -354,6 +354,35 @@ describe('singleSpaSvelte', () => {
 
             // Assert.
             expect(didThrow).toEqual(true);
+        });
+        test('Should clean up props on unmount.', async ({ onTestFinished }) => {
+            // Arrange.
+            const sspaProps = {
+                mountParcel: vi.fn(),
+                name: 'mifeA',
+                singleSpa: {}
+            };
+
+            const sspaPropsExtra = {
+                ...sspaProps,
+                propA: true
+            };
+
+            const lc = singleSpaSvelteFactory()(TestComponent);
+
+            // Act.
+            await lc.mount(sspaPropsExtra);
+            await lc.unmount(sspaPropsExtra);
+            
+            await lc.mount(sspaProps);
+
+            const element = screen.getByRole('alert');
+            const propA = element.getAttribute('data-propA');
+            
+            await lc.unmount(sspaProps);
+
+            // Assert.
+            expect(propA).not.toEqual("true");
         });
     });
     describe('update', () => {
