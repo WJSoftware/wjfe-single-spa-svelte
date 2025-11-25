@@ -61,7 +61,6 @@ describe('singleSpaSvelte', () => {
             });
 
             // Assert.
-            console.log(mountMock.mock.lastCall);
             expect(mountMock.mock.lastCall?.[1]?.target).not.toBe(target);
         });
         test('Should return a promise that successfully resolves upon mounting the component.', async () => {
